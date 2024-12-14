@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>RAG with Configurable Chunk Size</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Retrieval-Augmented Generation Demo (Configurable Chunk Size)</h1>
+  <div class="container">
+    <h2>Data Ingestion</h2>
+    <form id="ingestForm">
+      <label for="chunkSizeInput">Chunk Size (words):</label>
+      <input type="number" id="chunkSizeInput" name="chunkSize" value="128" min="1" style="width: 120px;">
+
+      <label for="folderInput">Local Folder Path:</label>
+      <input type="text" id="folderInput" name="folderpath" placeholder="e.g. ./docs"/>
+
+      <label for="urlInput">Remote URL:</label>
+      <input type="text" id="urlInput" name="urlpath" placeholder="https://example.com/text.pdf"/>
+
+      <label for="filetext">Paste File/Text Content:</label>
+      <textarea id="filetext" rows="4" placeholder="Copy/Paste text..."></textarea>
+
+      <button type="submit">Ingest</button>
+    </form>
+    <div id="ingestResponse" class="response"></div>
+
+    <hr/>
+
+    <h2>Query Inference</h2>
+    <form id="queryForm">
+      <label for="queryInput">Enter your query:</label>
+      <input type="text" id="queryInput" placeholder="What are the 2024 sales targets?"/>
+
+      <label for="backendSelect">LLM Backend:</label>
+      <select id="backendSelect">
+        <option value="local">Local</option>
+        <option value="openai">OpenAI</option>
+        <option value="together">Together.ai</option>
+        <option value="ollama">Ollama</option>
+      </select>
+
+      <button type="submit">Submit</button>
+    </form>
+
+    <div id="inferenceResponse" class="response"></div>
+  </div>
+
+  <script>
+    const ingestForm = document.getElementById('ingestForm');
+    const ingestResp = document.getElementById('ingestResponse');
+
+    ingestForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const chunkSize = document.getElementById('chunkSizeInput').value.trim();
+      const folderpath = document.getElementById('folderInput').value.trim();
+      const urlpath = document.getElementById('urlInput').value.trim();
+      const filetext = document.getElementById('filetext').value.trim();
+
+      ingestResp.innerHTML = "<p><em>Ingesting...</em></p>";
+
+      try {
+        const res = await fetch('/ingest', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `chunkSize=${encodeURIComponent(chunkSize)}&folderpath=${encodeURIComponent(folderpath)}&urlpath=${encodeURIComponent(urlpath)}&filetext=${encodeURIComponent(filetext)}`
+        });
+        const data = await res.json();
+        ingestResp.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+      } catch (err) {
+        ingestResp.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+      }
+    });
+
+    // Query form logic
+    const queryForm = document.getElementById('queryForm');
+    const inferenceResponse = document.getElementById('inferenceResponse');
+
+    queryForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const queryInput = document.getElementById('queryInput').value.trim();
+      if (!queryInput) return;
+
+      const backend = document.getElementById('backendSelect').value;
+      inferenceResponse.innerHTML = "<p><em>Generating...</em></p>";
+
+      try {
+        const res = await fetch('/inference', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: `query=${encodeURIComponent(queryInput)}&backend=${encodeURIComponent(backend)}`
+        });
+        const data = await res.json();
+        inferenceResponse.innerHTML = `
+          <h3>Retrieved Context:</h3>
+          <pre>${data.retrieved_context || 'No context'}</pre>
+          <h3>Final Response (${backend}):</h3>
+          <pre>${data.final_response}</pre>
+        `;
+      } catch (err) {
+        inferenceResponse.innerHTML = `<p style="color:red;">Error: ${err.message}</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
