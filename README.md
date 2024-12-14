@@ -329,9 +329,9 @@ You now have a **production-oriented** RAGE system that can dynamically adapt ch
 ```bash
 git clone https://github.com/GATERAGE/neuralnet
 cd neuralnet
-python -m venv rage
+python3.10 -m venv rage
 source venv/bin/activate  # or venv\Scripts\activate on Windows
-
+python --version
 pip install torch torchvision torchaudio
 pip install faiss-cpu          # or faiss-gpu if GPU available
 pip install sentence-transformers requests
