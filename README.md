@@ -33,6 +33,25 @@ This project provides a multi-format data ingestion pipeline (PDF, DOCX, TXT, MD
    ```bash
    node --version   # should be >= 14
    ```
+   ```bash
+   node server.js
+   ```
+   Open http://localhost:3000 in your browser
+
+   Usage
+
+    Ingest Data: Provide chunk size, folder path (./docs), URLs, or paste text. Click Ingest.
+    Query: Enter a query, pick LLM backend, click Submit.
+    Result: The system retrieves top-k chunks from FAISS, merges them into a prompt, and calls the chosen LLM.
+
+Environment Variables
+
+    OPENAI_API_KEY
+    TOGETHER_API_KEY
+    OLLAMA_ENDPOINT (default http://localhost:11411)
+
+   
+   
 
    
 
