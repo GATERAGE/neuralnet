@@ -53,5 +53,19 @@ Environment Variables
    
    
 
+---
+
+## Running & Testing
+
+1. **Install** all Python deps and confirm Node version.  
+2. **`node server.js`**  
+3. **Open** [http://localhost:3000](http://localhost:3000):
+   - In **Data Ingestion**, set **Chunk Size** (e.g. 4096).  
+   - Provide a folder path like `./docs` or a remote URL.  
+   - Hit **Ingest**.  
+   - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
+
+You now have a **production-oriented** RAG system that can dynamically adapt chunk size for large context windows. Enjoy!
+
    
 
