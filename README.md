@@ -21,14 +21,16 @@ my_project/
 This project provides a multi-format data ingestion pipeline (PDF, DOCX, TXT, MD, URLs), chunking them at a user-configurable size (e.g. 128 words, 4096 words, etc.), storing embeddings in FAISS, then augmenting user queries with retrieved chunks. The final prompt is routed to a local minimal Transformer or external LLM API (OpenAI, Together.ai, Ollama).
 
 ## Setup
+```bash
+python -m venv venv
+source venv/bin/activate  # or venv\Scripts\activate on Windows
 
-1. **Install Python Dependencies**:
-   ```bash
-   pip install torch torchvision torchaudio
-   pip install faiss-cpu             # or faiss-gpu
-   pip install sentence-transformers requests
-   pip install PyPDF2 python-docx    # for PDF / DOCX
-   ```
+pip install torch torchvision torchaudio
+pip install faiss-cpu          # or faiss-gpu if GPU available
+pip install sentence-transformers requests
+pip install PyPDF2             # optional, for PDF parsing
+pip install python-docx        # optional, for DOCX parsing
+```
 
    ```bash
    node --version   # should be >= 14
