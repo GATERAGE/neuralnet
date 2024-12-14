@@ -59,13 +59,6 @@ It outputs:
 
     Logits of shape (batch_size, seq_len, vocab_size).
 
-Setup
-
-    Install dependencies:
-
-```bash
-pip install torch
-```
 Import and initialize the model:
 ```bash
     import torch
