@@ -12,7 +12,6 @@ Features
     Causal Masking: Enables autoregressive decoding for tasks like text generation.
     Weight Sharing: Optionally ties the embedding and output layers for efficiency.
 
-File Overview
 Key Classes
 
     PositionalEncoding
@@ -37,9 +36,8 @@ Key Classes
     create_causal_mask
         Generates a triangular causal mask for autoregressive decoding.
 
-Model Initialization
+Model Initialization: The ProductionTransformer class supports flexible initialization with customizable parameters:
 
-The ProductionTransformer class supports flexible initialization with customizable parameters:
 ```bash
     vocab_size: Vocabulary size for token embeddings.
     d_model: Dimensionality of the model.
@@ -50,14 +48,12 @@ The ProductionTransformer class supports flexible initialization with customizab
     max_len: Maximum sequence length.
     tie_weights: Whether to tie the embedding and output layers.
 ```
-Forward Pass
-
-The forward method expects:
+Forward Pass method expects:
 
     Input tensor x of shape (batch_size, seq_len) containing token indices.
     Optional mask tensor mask of shape (batch_size, seq_len, seq_len) for padding or causal masking.
 
-It outputs:
+outputting:
 
     Logits of shape (batch_size, seq_len, vocab_size).
 
