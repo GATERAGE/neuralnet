@@ -14,6 +14,35 @@ my_project/
  ├─ INSTALL.md
  └─ docs/                  (default folder for local files)
 ```
+# Introduction
+
+Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
+
+The RAGE Transformer Project is an end-to-end implementation of a RAG pipeline. It focuses on multiple data types (TXT, MD, PDF, DOCX, remote URLs), a minimal local Transformer (ProductionTransformer), and integration with external LLM APIs (OpenAI, Together.ai, Ollama). A Node.js server provides a straightforward UI to ingest data and query the pipeline.
+Project Goals
+
+    Modular Data Ingestion: Handle local folders, file uploads, and remote URLs, chunkifying text for efficient retrieval.
+    Unified Index: Use FAISS to build and store embeddings, enabling top-k retrieval.
+    Pluggable LLMs: Offer a simple router (LLMRouter) to switch between local or API-based inference.
+    Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
+    Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
+
+Architecture Overview
+
+The RAGE Transformer system comprises:
+
+    RAGEDataLoader: Loads and chunkifies data from multiple sources and file types.
+    FAISS Index: Stores text embeddings computed by SentenceTransformers.
+    RAGInference: Coordinates ingestion, indexing, and retrieval. Merges user query with retrieved chunks.
+    LLMRouter: Chooses which LLM backend to call (local transformer, OpenAI, Together.ai, or Ollama).
+    ProductionTransformer: A minimal PyTorch Transformer that can serve as a local LLM.
+    Node.js front-end: Serves index.html and style.css; handles ingestion and inference requests.
+
+    ```bash
+    [User Query] --> [Node.js] --> [rag_inference.py] --> [FAISS: Retrieve Chunks] 
+                --> [LLMRouter: Local/OpenAI/Together/Ollama] --> [Final Response]
+    ```
+
 
 
 # Retrieval-Augmented Generation with Configurable Chunk Size
