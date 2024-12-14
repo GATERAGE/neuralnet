@@ -1,4 +1,6 @@
-Production_Transformer.py: A Minimal Local Transformer Model
+# A Minimal Local Transformer Model
+
+Production_Transformer.py
 
 This project implements a minimal Transformer architecture designed for sequence modeling tasks like language modeling. It includes key components such as Positional Encoding, Multi-Head Self-Attention, and Transformer Encoder Blocks, all built using PyTorch.
 Features
