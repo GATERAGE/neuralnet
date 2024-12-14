@@ -38,7 +38,7 @@ You now have a **production-oriented** RAGE system that can dynamically adapt ch
 
 ## Setup
 ```bash
-python -m venv venv
+python -m venv rage
 source venv/bin/activate  # or venv\Scripts\activate on Windows
 
 pip install torch torchvision torchaudio
