@@ -1,0 +1,51 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  background-color: #f8f8f8;
+}
+
+h1, h2 {
+  text-align: center;
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+}
+
+label {
+  margin: 8px 0 4px;
+  font-weight: bold;
+}
+
+input[type="text"], input[type="number"], textarea, select {
+  padding: 8px;
+  margin-bottom: 10px;
+  font-size: 1em;
+}
+
+button {
+  width: 100px;
+  padding: 8px;
+  font-size: 1em;
+  cursor: pointer;
+}
+
+.response {
+  padding: 10px;
+  background: #f2f2f2;
+  border: 1px solid #ddd;
+  white-space: pre-wrap;
+  min-height: 50px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
