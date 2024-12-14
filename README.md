@@ -38,10 +38,10 @@ The RAGE Transformer system comprises:
     ProductionTransformer: A minimal PyTorch Transformer that can serve as a local LLM.
     Node.js front-end: Serves index.html and style.css; handles ingestion and inference requests.
 
-    ```bash
+```bash
     [User Query] --> [Node.js] --> [rag_inference.py] --> [FAISS: Retrieve Chunks] 
                 --> [LLMRouter: Local/OpenAI/Together/Ollama] --> [Final Response]
-    ```
+```
 
 Data Ingestion & Chunking
 Multiple Data Formats
