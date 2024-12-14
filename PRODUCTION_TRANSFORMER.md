@@ -65,12 +65,11 @@ Setup
 
 ```bash
 pip install torch
-``
+```
 Import and initialize the model:
 ```bash
     import torch
     from your_module import ProductionTransformer, create_causal_mask
-
     model = ProductionTransformer(vocab_size=10000, d_model=128, num_heads=4, num_layers=2)
 ```
 Example
