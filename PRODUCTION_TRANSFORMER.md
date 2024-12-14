@@ -2,8 +2,7 @@
 
 Production_Transformer.py
 
-This project implements a minimal Transformer architecture designed for sequence modeling tasks like language modeling. It includes key components such as Positional Encoding, Multi-Head Self-Attention, and Transformer Encoder Blocks, all built using PyTorch.
-Features
+This project implements a minimal Transformer architecture designed for sequence modeling tasks like language modeling. It includes key components such as Positional Encoding, Multi-Head Self-Attention, and Transformer Encoder Blocks, all built using PyTorch featuring;
 
     Positional Encoding: Injects positional information into token embeddings.
     Multi-Head Self-Attention: Allows the model to focus on different parts of the sequence simultaneously.
