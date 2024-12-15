@@ -347,9 +347,6 @@ This project provides a multi-format data ingestion pipeline (PDF, DOCX, TXT, MD
    - Hit **Ingest**.  
    - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
 
-You now have a **production-oriented** RAGE system that can dynamically adapt chunk size for large context windows. Enjoy!
-
-
 ## Setup
 ```bash
 git clone https://github.com/GATERAGE/neuralnet
@@ -423,7 +420,7 @@ A Node.js server hosts a simple web front-end (index.html) for ingestion and que
    - Hit **Ingest**.  
    - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
 
-You now have a **production-oriented** RAG system that can dynamically adapt chunk size for large context windows. Enjoy!
+You now have a **production-oriented** RAGE system that can dynamically adapt chunk size for large context windows. Enjoy!
 
    
 
