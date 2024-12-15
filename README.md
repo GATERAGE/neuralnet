@@ -359,7 +359,8 @@ source venv/bin/activate  # or venv\Scripts\activate on Windows
 python --version
 pip install torch torchvision torchaudio
 pip install faiss-cpu          # or faiss-gpu if GPU available
-pip install sentence-transformers requests
+pip install sentence-transformers request
+pip install openai             # required as checked before using ollama model
 pip install PyPDF2             # optional, for PDF parsing
 pip install python-docx        # optional, for DOCX parsing
 ```
