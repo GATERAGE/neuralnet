@@ -61,7 +61,9 @@ It outputs:
 
 Setup
 
-    Install dependencies: refer to <a href="https://github.com/GATERAGE/neuralnet/blob/main/README.md">README.md</a>
+    Install dependencies: refer to
+
+    <a href="https://github.com/GATERAGE/neuralnet/blob/main/README.md">README.md</a>
 
 
 Import and initialize the model:
