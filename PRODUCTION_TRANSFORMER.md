@@ -61,11 +61,9 @@ It outputs:
 
 Setup
 
-    Install dependencies:
+    Install dependencies: refer to readme.md
 
-```bash
-pip install torch
-``
+
 Import and initialize the model:
 ```bash
     import torch
