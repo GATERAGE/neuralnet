@@ -2,18 +2,42 @@
 an exploration of RAGE integration with a mini transformer
 
 ```bash
-my_project/
- ├─ production_transformer.py
- ├─ rage_dataloader.py
- ├─ llm_router.py
- ├─ rag_inference.py
+neuralnet/
+ ├─ DOC.md
  ├─ server.js
+ ├─ requirements.txt
  ├─ index.html
  ├─ style.css
- ├─ README.md
- ├─ INSTALL.md
- └─ docs/                  (default folder for local files)
+ ├─ memory/                (auto-created to store ingest/inference logs)
+ ├─ docs/                  (where user-pasted text is saved)
+ ├─ rag_inference.py
+ ├─ rage_dataloader.py
+ ├─ llm_router.py
+ ├─ production_transformer.py
+
 ```
+
+# RAG Project Documentation
+
+## Overview
+
+This project implements a **Retrieval-Augmented Generation (RAG)** pipeline, combining:
+1. **Node.js server** for ingestion and inference endpoints.
+2. **Python scripts** that handle chunking, embedding, indexing (FAISS), and LLM backends (local, OpenAI, Together.ai, Ollama).
+
+The ingestion results and final inference outputs are saved in a `memory/` folder for easy auditing/debugging.
+
+## Use Case
+
+- **Data Ingestion**: POST `/ingest` with form data (local folder path, remote URL, or pasted text). The pipeline uses `sentence_transformers` to embed data into a FAISS index. Partial successes or errors are logged in the final `.json` file in `memory/`.
+- **Inference**: POST `/inference` with parameters like `query` or `backend` (e.g., "ollama", "openai"). The pipeline retrieves top-k chunks from the FAISS index, merges them with the user query, and calls the specified LLM backend.
+
+## Setup Steps
+
+1. **Install Node.js** (v14+).
+2. **Create a Python 3.10 virtual environment** (avoid Python 3.12 since PyTorch may not be stable)
+3. **Install Python dependencies**:
+4. 
 # Introduction
 
 Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
