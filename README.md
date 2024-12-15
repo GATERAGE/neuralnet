@@ -37,7 +37,7 @@ The ingestion results and final inference outputs are saved in a `memory/` folde
 1. **Install Node.js** (v14+).
 2. **Create a Python 3.10 virtual environment** (avoid Python 3.12 since PyTorch may not be stable)
 3. **Install Python dependencies**:
-4. 
+   
 # Introduction
 
 Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
