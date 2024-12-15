@@ -59,11 +59,11 @@ Project Goals
 
 The RAGE Transformer system comprises:
 
-    RAGEDataLoader: Loads and chunkifies data from multiple sources and file types.
+    rage_dataloader: Loads and chunkifies data from multiple sources and file types.
     FAISS Index: Stores text embeddings computed by SentenceTransformers.
-    RAGInference: Coordinates ingestion, indexing, and retrieval. Merges user query with retrieved chunks.
-    LLMRouter: Chooses which LLM backend to call (local transformer, OpenAI, Together.ai, or Ollama).
-    ProductionTransformer: A minimal PyTorch Transformer that can serve as a local LLM.
+    rag_inference: Coordinates ingestion, indexing, and retrieval. Merges user query with retrieved chunks.
+    llm_router: Chooses which LLM backend to call (local transformer, OpenAI, Together.ai, or Ollama).
+    production_transformer: A minimal PyTorch Transformer that can serve as a local LLM.
     Node.js front-end: Serves index.html and style.css; handles ingestion and inference requests.
 
 [User Query] --> [Node.js] --> [rag_inference.py] --> [FAISS: Retrieve Chunks] 
