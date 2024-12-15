@@ -34,9 +34,9 @@ The ingestion results and final inference outputs are saved in a `memory/` folde
     Data Ingestion & Chunking
     RAGE Transformer Components
         ProductionTransformer
-        RAGEDataLoader
-        LLMRouter
-        RAGInference
+        rage_dataloader
+        llm_router
+        rag_inference
     UI & User Experience
     Best Practices for Indexing & Retrieval
     Deployment & Environment Variables
