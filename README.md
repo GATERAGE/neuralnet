@@ -40,7 +40,7 @@ The ingestion results and final inference outputs are saved in a `memory/` folde
    
 # Introduction
 
-Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
+Retrieval Augmented Generative Engine (RAGE) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
 
 The RAGE Transformer Project is an end-to-end implementation of a RAG pipeline. It focuses on multiple data types (TXT, MD, PDF, DOCX, remote URLs), a minimal local Transformer (ProductionTransformer), and integration with external LLM APIs (OpenAI, Together.ai, Ollama). A Node.js server provides a straightforward UI to ingest data and query the pipeline.
 Project Goals
@@ -51,7 +51,7 @@ Project Goals
     Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
     Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
 
-Architecture Overview
+# Architecture Overview
 
 The RAGE Transformer system comprises:
 
@@ -67,7 +67,7 @@ The RAGE Transformer system comprises:
                 --> [LLMRouter: Local/OpenAI/Together/Ollama] --> [Final Response]
 ```
 
-Data Ingestion & Chunking
+# Data Ingestion & Chunking
 Multiple Data Formats
 
     TXT / Markdown: Basic text files are read linearly and chunked by words.
@@ -91,59 +91,8 @@ ProductionTransformer
     Key Methods:
         forward(x, mask=None): Takes token IDs and optional causal mask, returns logits.
 
-RAGEDataLoader
 
-    Module: rage_dataloader.py
-    Role: Collect, parse, chunk data from local or remote sources.
-    Naming Convention: “RAGE” stands for Retrieval-Augmented Generative Engine, focusing on the ingestion side.
-    Features:
-        _load_pdf_file, _load_docx_file, _load_text_file: Specialized loaders for each format.
-        _chunk_text: Splits text into word-based chunks, e.g. 128 words each.
-
-LLMRouter
-
-    Module: llm_router.py
-    Role: Takes the final augmented prompt and dispatches it to a desired LLM backend.
-    Naming Convention: “Router” clarifies it’s not generating text by itself but routing the prompt to a local or remote model.
-    Backends:
-        local (ProductionTransformer)
-        openai (requires OPENAI_API_KEY)
-        together (requires TOGETHER_API_KEY)
-        ollama (calls a local Llama-based server via an HTTP endpoint)
-
-RAGInference
-
-    Module: rag_inference.py
-    Role: Ties ingestion, FAISS indexing, and inference together.
-    Naming Convention: “RAGInference” clearly signals a Retrieval-Augmented Generation process.
-    Key Routines:
-        build_or_load_index(): If existing FAISS index files are found, load them. Otherwise, build from the default docs/ folder.
-        ingest_data(): Merges newly provided data (files, folders, URLs) with the existing index.
-        retrieve_context(query, top_k=3): Returns top-k chunk matches.
-        generate_response(query): Merges user query and retrieved context, then calls LLMRouter.
-
-UI & User Experience
-
-Node.js serves a minimal front-end (index.html + style.css) that:
-
-    Data Ingestion Form:
-        Folder Path: Points to local directories with PDF, DOCX, TXT/MD files.
-        URL: Fetches remote text or HTML.
-        Pasted Content: Allows direct input of arbitrary text.
-    Query Form:
-        Query: A user question or prompt (e.g., “Summarize our Q4 strategy.”).
-        LLM Backend: Choose from local, OpenAI, Together, or Ollama.
-
-By separating ingestion and inference steps, the user can gradually build up the FAISS index from multiple sources. They can then query the combined knowledge base.
-Best Practices for Indexing & Retrieval
-
-    Granular Chunks: Aim for chunk sizes of 256–512 tokens (or ~128–300 words). This balance helps retrieval systems find just enough context.
-    Regular Index Updates: If new documents arrive or older ones get replaced, rebuild the index or adopt partial indexing methods.
-    Metadata Tracking: (Optional) Store metadata (e.g., source file name, creation date) alongside chunks.
-    Vector Normalization: Most Sentence Transformers produce normalized embeddings. For FAISS IndexFlatIP, ensure embeddings are float32 and in consistent shape (N, d).
-    Masking & Tokenization (for local model): The ProductionTransformer code includes a basic positional encoding but doesn’t show tokenization or generation loops. In production, integrate a real tokenizer (e.g., HuggingFace) for the local model.
-
-Deployment & Environment Variables
+# Deployment & Environment Variables
 
 Secrets:
 
@@ -163,7 +112,7 @@ OLLAMA_ENDPOINT="http://localhost:11411"
 Below is a comprehensive article explaining the RAGE Transformer Project. It highlights the retrieval-augmented generation (RAG) pipeline, the project’s architecture, naming conventions, and best practices for data ingestion and deployment. Feel free to adapt or publish it as an internal wiki entry, a public blog post, or project documentation.
 RAGE Transformer: A Multi-Source Retrieval-Augmented Generation Architecture
 
-Table of Contents
+# Table of Contents
 
     Introduction
     Project Goals
