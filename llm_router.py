@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
+# llm_router.py
 
 import os
 import torch
 import requests
 import json
 import openai
-
 from production_transformer import ProductionTransformer
 
 class LLMRouter:
     """
     Routes inference to local or remote LLM backends:
-      - local (ProductionTransformer)
+      - local (ProductionTransformer placeholder)
       - OpenAI
       - Together.ai
       - Ollama
@@ -50,7 +50,6 @@ class LLMRouter:
             return f"[Error] Unsupported backend: {backend}"
 
     def _generate_local(self, prompt):
-        # Placeholder local generation (dummy logic)
         model = self.load_local_model()
         dummy_input = torch.randint(0, self.local_vocab_size, (1, 20))
         with torch.no_grad():
@@ -95,9 +94,6 @@ class LLMRouter:
             return f"[Together.ai Error: {str(e)}]"
 
     def _generate_ollama(self, prompt):
-        """
-        Hypothetical Ollama usage.
-        """
         try:
             endpoint = f"{self.ollama_endpoint}/generate"
             payload = {"prompt": prompt, "model": "llama2"}
@@ -109,3 +105,4 @@ class LLMRouter:
                 return f"[Ollama Error: {resp.status_code} {resp.text}]"
         except Exception as e:
             return f"[Ollama Error: {str(e)}]"
+

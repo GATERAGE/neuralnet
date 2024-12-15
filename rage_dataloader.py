@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
+# rage_dataloader.py
 
 import os
 import re
 import logging
 import requests
 
-# Optional libraries for parsing different file types
 try:
-    import PyPDF2  # pip install PyPDF2
+    import PyPDF2
 except ImportError:
     PyPDF2 = None
 
 try:
-    import docx  # pip install python-docx
+    import docx
 except ImportError:
     docx = None
 
@@ -22,10 +22,6 @@ class RAGEDataLoader:
     or plain text from remote URLs.
     """
     def __init__(self, chunk_size=128, allowed_extensions=None):
-        """
-        :param chunk_size: number of words per text chunk
-        :param allowed_extensions: file extensions to consider
-        """
         if allowed_extensions is None:
             allowed_extensions = ('.txt', '.md', '.pdf', '.docx')
         self.chunk_size = chunk_size
@@ -33,9 +29,6 @@ class RAGEDataLoader:
         logging.basicConfig(level=logging.INFO)
 
     def load_from_folder(self, folder_path):
-        """
-        Recursively load allowed file types from a local folder and return text chunks.
-        """
         all_chunks = []
         for root, dirs, files in os.walk(folder_path):
             for file in files:
@@ -45,9 +38,6 @@ class RAGEDataLoader:
         return all_chunks
 
     def load_file(self, filepath):
-        """
-        Load and chunkify a single file based on extension.
-        """
         _, ext = os.path.splitext(filepath)
         ext = ext.lower()
         if ext in ('.txt', '.md'):
@@ -68,11 +58,14 @@ class RAGEDataLoader:
 
     def load_from_url(self, url):
         """
-        Fetch text from a remote URL.
-        In production, you'd handle HTML parsing or advanced file detection.
+        Fetch text from remote URL using a more “browser-like” user agent 
+        to reduce 403 forbidden.
         """
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)'
+        }
         try:
-            response = requests.get(url, timeout=10)
+            response = requests.get(url, timeout=10, headers=headers)
             response.raise_for_status()
             text = response.text
             return self._chunk_text(text)
@@ -80,9 +73,6 @@ class RAGEDataLoader:
             logging.error(f"Error fetching URL: {url}, {e}")
             return []
 
-    # ---------------------
-    # File-specific loaders
-    # ---------------------
     def _load_text_file(self, filepath):
         with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
             text = f.read()
@@ -118,16 +108,11 @@ class RAGEDataLoader:
             logging.error(f"Error reading DOCX file {filepath}: {e}")
         return chunks
 
-    # ---------------------
-    # Helpers
-    # ---------------------
     def _chunk_text(self, text):
-        """
-        Basic whitespace chunking by `chunk_size` words each.
-        """
         words = re.split(r"\s+", text)
         chunks = []
         for i in range(0, len(words), self.chunk_size):
             chunk = " ".join(words[i:i+self.chunk_size])
             chunks.append(chunk)
         return chunks
+

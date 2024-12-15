@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# rag_inference.py
 
 import os
 import sys
@@ -32,9 +33,6 @@ class RAGInference:
         self.index = None
 
     def build_or_load_index(self):
-        """
-        Load existing FAISS index if found; otherwise build from folder.
-        """
         if (os.path.exists(self.index_path + ".index") and
             os.path.exists(self.index_path + "_chunks.npy")):
             self.index = faiss.read_index(self.index_path + ".index")
@@ -56,9 +54,6 @@ class RAGInference:
         self.index.add(embeddings)
 
     def ingest_data(self, filepaths=None, folderpaths=None, urls=None, chunk_size=None):
-        """
-        Ingest new data (files, folders, URLs), optionally override chunk_size.
-        """
         if chunk_size is not None:
             self.chunk_size = chunk_size
 
@@ -110,8 +105,8 @@ class RAGInference:
 
 def main():
     """
-    If first arg is 'ingest', read ingestion JSON from stdin (including chunk_size).
-    Otherwise, normal RAG inference with query + backend in command line args.
+    - If sys.argv[1] == "ingest": read JSON from stdin, perform ingestion
+    - Otherwise: treat sys.argv[1] as user_query, sys.argv[2] as backend (default local)
     """
     if len(sys.argv) > 1 and sys.argv[1] == "ingest":
         payload = json.loads(sys.stdin.read())
@@ -119,14 +114,14 @@ def main():
 
         rag = RAGInference(chunk_size=chunk_size)
         rag.build_or_load_index()
-
         rag.ingest_data(
             filepaths=payload.get("filepaths", []),
             folderpaths=payload.get("folderpaths", []),
             urls=payload.get("urls", []),
             chunk_size=chunk_size
         )
-        print(json.dumps({"status": "success", "message": "Data ingested"}))
+        # Print success JSON
+        print(json.dumps({"status": "success", "message": "Data ingestion complete"}))
 
     else:
         user_query = sys.argv[1] if len(sys.argv) > 1 else "Test query"
@@ -138,3 +133,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

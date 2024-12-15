@@ -1,8 +1,7 @@
-# A Minimal Local Transformer Model
+Production_Transformer.py: A Minimal Local Transformer Model
 
-Production_Transformer.py
-
-This project implements a minimal Transformer architecture designed for sequence modeling tasks like language modeling. It includes key components such as Positional Encoding, Multi-Head Self-Attention, and Transformer Encoder Blocks, all built using PyTorch featuring;
+This project implements a minimal Transformer architecture designed for sequence modeling tasks like language modeling. It includes key components such as Positional Encoding, Multi-Head Self-Attention, and Transformer Encoder Blocks, all built using PyTorch.
+Features
 
     Positional Encoding: Injects positional information into token embeddings.
     Multi-Head Self-Attention: Allows the model to focus on different parts of the sequence simultaneously.
@@ -11,6 +10,7 @@ This project implements a minimal Transformer architecture designed for sequence
     Causal Masking: Enables autoregressive decoding for tasks like text generation.
     Weight Sharing: Optionally ties the embedding and output layers for efficiency.
 
+File Overview
 Key Classes
 
     PositionalEncoding
@@ -35,8 +35,9 @@ Key Classes
     create_causal_mask
         Generates a triangular causal mask for autoregressive decoding.
 
-Model Initialization: The ProductionTransformer class supports flexible initialization with customizable parameters:
+Model Initialization
 
+The ProductionTransformer class supports flexible initialization with customizable parameters:
 ```bash
     vocab_size: Vocabulary size for token embeddings.
     d_model: Dimensionality of the model.
@@ -47,19 +48,29 @@ Model Initialization: The ProductionTransformer class supports flexible initiali
     max_len: Maximum sequence length.
     tie_weights: Whether to tie the embedding and output layers.
 ```
-Forward Pass method expects:
+Forward Pass
+
+The forward method expects:
 
     Input tensor x of shape (batch_size, seq_len) containing token indices.
     Optional mask tensor mask of shape (batch_size, seq_len, seq_len) for padding or causal masking.
 
-outputting:
+It outputs:
 
     Logits of shape (batch_size, seq_len, vocab_size).
 
+Setup
+
+    Install dependencies:
+
+```bash
+pip install torch
+``
 Import and initialize the model:
 ```bash
     import torch
     from your_module import ProductionTransformer, create_causal_mask
+
     model = ProductionTransformer(vocab_size=10000, d_model=128, num_heads=4, num_layers=2)
 ```
 Example

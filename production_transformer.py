@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# production_transformer.py
 
 import math
 import torch
@@ -16,7 +17,7 @@ class PositionalEncoding(nn.Module):
         div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
         pe[:, 0::2] = torch.sin(position * div_term)
         pe[:, 1::2] = torch.cos(position * div_term)
-        pe = pe.unsqueeze(0)  # (1, max_len, d_model)
+        pe = pe.unsqueeze(0)
         self.register_buffer('pe', pe)
 
     def forward(self, x):
@@ -25,7 +26,6 @@ class PositionalEncoding(nn.Module):
         return x
 
 class MultiHeadSelfAttention(nn.Module):
-    """Multi-head self-attention with optional masking."""
     def __init__(self, d_model, num_heads, dropout=0.1):
         super().__init__()
         assert d_model % num_heads == 0, "d_model must be divisible by num_heads."
@@ -40,9 +40,10 @@ class MultiHeadSelfAttention(nn.Module):
 
     def forward(self, x, mask=None):
         bsz, seq_len, d_model = x.size()
-        Q = self.query(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-        K = self.key(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1, 2)
-        V = self.value(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1, 2)
+
+        Q = self.query(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1,2)
+        K = self.key(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1,2)
+        V = self.value(x).view(bsz, seq_len, self.num_heads, self.d_k).transpose(1,2)
 
         scores = torch.matmul(Q, K.transpose(-2, -1)) / math.sqrt(self.d_k)
         if mask is not None:
@@ -50,13 +51,13 @@ class MultiHeadSelfAttention(nn.Module):
 
         attn_weights = F.softmax(scores, dim=-1)
         attn_weights = self.dropout(attn_weights)
-
         context = torch.matmul(attn_weights, V)
+
         context = context.transpose(1, 2).contiguous().view(bsz, seq_len, d_model)
-        return self.out(context)
+        out = self.out(context)
+        return out
 
 class TransformerBlock(nn.Module):
-    """One transformer encoder block."""
     def __init__(self, d_model, num_heads, dim_feedforward=512, dropout=0.1):
         super().__init__()
         self.attn = MultiHeadSelfAttention(d_model, num_heads, dropout)
@@ -111,6 +112,7 @@ class ProductionTransformer(nn.Module):
         """
         x shape: (batch_size, seq_len)
         mask shape: (batch_size, seq_len, seq_len) or None
+        Returns: logits shape (batch_size, seq_len, vocab_size)
         """
         x = self.embedding(x) * math.sqrt(self.d_model)
         x = self.pos_encoding(x)
@@ -120,8 +122,6 @@ class ProductionTransformer(nn.Module):
         return logits
 
 def create_causal_mask(seq_len, device='cpu'):
-    """
-    Triangular causal mask for autoregressive decoding.
-    shape: (1, seq_len, seq_len)
-    """
-    return torch.tril(torch.ones(seq_len, seq_len, device=device)).unsqueeze(0)
+    mask = torch.tril(torch.ones(seq_len, seq_len, device=device)).unsqueeze(0)
+    return mask
+
