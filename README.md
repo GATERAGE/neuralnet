@@ -17,11 +17,11 @@ neuralnet/
 
 ```
 
-# RAG Project Documentation
+# RAGE Project Documentation
 
 ## Overview
 
-This project implements a **Retrieval-Augmented Generation (RAG)** pipeline, combining:
+This project implements a **Retrieval-Augmented Generation Engine template** pipeline, combining:
 1. **Node.js server** for ingestion and inference endpoints.
 2. **Python scripts** that handle chunking, embedding, indexing (FAISS), and LLM backends (local, OpenAI, Together.ai, Ollama).
 
