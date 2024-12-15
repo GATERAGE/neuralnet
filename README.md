@@ -27,91 +27,6 @@ This project implements a **Retrieval Augmented Generative Engine as template** 
 
 The ingestion results and final inference outputs are saved in a `memory/` folder for easy auditing/debugging.
 
-## Use Case
-
-- **Data Ingestion**: POST `/ingest` with form data (local folder path, remote URL, or pasted text). The pipeline uses `sentence_transformers` to embed data into a FAISS index. Partial successes or errors are logged in the final `.json` file in `memory/`.
-- **Inference**: POST `/inference` with parameters like `query` or `backend` (e.g., "ollama", "openai"). The pipeline retrieves top-k chunks from the FAISS index, merges them with the user query, and calls the specified LLM backend.
-
-## Setup Steps
-
-1. **Install Node.js** (v14+).
-2. **Create a Python 3.10 virtual environment** (avoid Python 3.12 since PyTorch may not be stable)
-3. **Install Python dependencies**:
-   
-# Introduction
-
-Retrieval Augmented Generative Engine (RAGE) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
-
-The RAGE Transformer Project is an end-to-end implementation of a RAG pipeline. It focuses on multiple data types (TXT, MD, PDF, DOCX, remote URLs), a minimal local Transformer (ProductionTransformer), and integration with external LLM APIs (OpenAI, Together.ai, Ollama). A Node.js server provides a straightforward UI to ingest data and query the pipeline.
-Project Goals
-
-    Modular Data Ingestion: Handle local folders, file uploads, and remote URLs, chunkifying text for efficient retrieval.
-    Unified Index: Use FAISS to build and store embeddings, enabling top-k retrieval.
-    Pluggable LLMs: Offer a simple router (LLMRouter) to switch between local or API-based inference.
-    Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
-    Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
-
-# Architecture Overview
-
-The RAGE Transformer system comprises:
-
-    RAGEDataLoader: Loads and chunkifies data from multiple sources and file types.
-    FAISS Index: Stores text embeddings computed by SentenceTransformers.
-    RAGInference: Coordinates ingestion, indexing, and retrieval. Merges user query with retrieved chunks.
-    LLMRouter: Chooses which LLM backend to call (local transformer, OpenAI, Together.ai, or Ollama).
-    ProductionTransformer: A minimal PyTorch Transformer that can serve as a local LLM.
-    Node.js front-end: Serves index.html and style.css; handles ingestion and inference requests.
-
-```bash
-    [User Query] --> [Node.js] --> [rag_inference.py] --> [FAISS: Retrieve Chunks] 
-                --> [LLMRouter: Local/OpenAI/Together/Ollama] --> [Final Response]
-```
-
-# Data Ingestion & Chunking
-Multiple Data Formats
-
-    TXT / Markdown: Basic text files are read linearly and chunked by words.
-    PDF: Parsed via PyPDF2, extracting textual data from pages.
-    DOCX: Read with python-docx, extracting paragraph text.
-    URLs: Fetched as raw text via requests; can be HTML or plain text.
-
-    ```bash
-    for i in range(0, len(words), self.chunk_size):
-    chunk = " ".join(words[i:i+self.chunk_size])
-    chunks.append(chunk)
-```
-
-Why chunk? It gives the FAISS index better granularity for retrieval. Instead of indexing entire documents, we store smaller text pieces—making results more targeted.
-RAGE Transformer Components
-ProductionTransformer
-
-    Module: production_transformer.py
-    Role: Minimal PyTorch encoder that can function as a local language model (placeholder).
-    Naming Convention: Prefixed with “Production” to highlight it’s a building block ready for deployment.
-    Key Methods:
-        forward(x, mask=None): Takes token IDs and optional causal mask, returns logits.
-
-
-# Deployment & Environment Variables
-
-Secrets:
-
-    OPENAI_API_KEY: for OpenAI GPT usage.
-    TOGETHER_API_KEY: for Together.ai.
-    OLLAMA_ENDPOINT: default http://localhost:11411.
-
-Store them in environment variables or a .env file—never commit keys. For example:
-
-```bash
-# .env (do not commit)
-OPENAI_API_KEY="sk-..."
-TOGETHER_API_KEY="tog-..."
-OLLAMA_ENDPOINT="http://localhost:11411"
-```
-
-Below is a comprehensive article explaining the RAGE Transformer Project. It highlights the retrieval-augmented generation (RAG) pipeline, the project’s architecture, naming conventions, and best practices for data ingestion and deployment. Feel free to adapt or publish it as an internal wiki entry, a public blog post, or project documentation.
-RAGE Transformer: A Multi-Source Retrieval-Augmented Generation Architecture
-
 # Table of Contents
 
     Introduction
@@ -140,6 +55,7 @@ Project Goals
     Pluggable LLMs: Offer a simple router (LLMRouter) to switch between local or API-based inference.
     Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
     Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
+
 
 # Architecture Overview
 
