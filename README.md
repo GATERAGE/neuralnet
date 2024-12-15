@@ -16,7 +16,6 @@ neuralnet/
  ├─ production_transformer.py
 
 ```
-
 # RAGE Project Documentation
 
 ## Overview
@@ -55,7 +54,6 @@ Project Goals
     Pluggable LLMs: Offer a simple router (LLMRouter) to switch between local or API-based inference.
     Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
     Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
-
 
 # Architecture Overview
 
@@ -194,11 +192,9 @@ node server.js
 
 In rage_dataloader.py, every file is split into chunks of ~128 words (configurable). Word-level chunking ensures relevant segments remain contextually intact, while preventing excessively large vectors.
 
-
 # Retrieval-Augmented Generation with Configurable Chunk Size
 
 This project provides a multi-format data ingestion pipeline (PDF, DOCX, TXT, MD, URLs), chunking them at a user-configurable size (e.g. 128 words, 4096 words, etc.), storing embeddings in FAISS, then augmenting user queries with retrieved chunks. The final prompt is routed to a local minimal Transformer or external LLM API (OpenAI, Together.ai, Ollama)
-
 
 ---
 
@@ -253,6 +249,3 @@ pip install python-docx        # optional, for DOCX parsing
    - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
 
 You now have a **production-oriented** RAGE system that can dynamically adapt chunk size for large context windows. Open Source or go away.
-
-   
-
