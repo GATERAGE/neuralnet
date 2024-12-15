@@ -179,7 +179,7 @@ Table of Contents
     Deployment & Environment Variables
     Summary & Next Steps
 
-Introduction
+# Introduction
 
 Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
 
@@ -192,7 +192,7 @@ Project Goals
     Comprehensive UI: Provide a pure Node.js front-end for Data Ingestion and Query Inference.
     Best Practices: Keep secrets out of code, maintain a robust folder structure, and follow naming conventions for clarity.
 
-Architecture Overview
+# Architecture Overview
 
 The RAGE Transformer system comprises:
 
@@ -206,7 +206,7 @@ The RAGE Transformer system comprises:
 [User Query] --> [Node.js] --> [rag_inference.py] --> [FAISS: Retrieve Chunks] 
                 --> [LLMRouter: Local/OpenAI/Together/Ollama] --> [Final Response]
 
-Data Ingestion & Chunking
+# Data Ingestion & Chunking
 Multiple Data Formats
 
     TXT / Markdown: Basic text files are read linearly and chunked by words.
@@ -214,7 +214,7 @@ Multiple Data Formats
     DOCX: Read with python-docx, extracting paragraph text.
     URLs: Fetched as raw text via requests; can be HTML or plain text.
 
-Chunking Strategy
+# Chunking Strategy
 
 In rage_dataloader.py, every file is split into chunks of ~128 words (configurable). Word-level chunking ensures relevant segments remain contextually intact, while preventing excessively large vectors.
 
@@ -232,7 +232,7 @@ ProductionTransformer
     Key Methods:
         forward(x, mask=None): Takes token IDs and optional causal mask, returns logits.
 
-RAGEDataLoader
+# RAGEDataLoader
 
     Module: rage_dataloader.py
     Role: Collect, parse, chunk data from local or remote sources.
@@ -241,7 +241,7 @@ RAGEDataLoader
         _load_pdf_file, _load_docx_file, _load_text_file: Specialized loaders for each format.
         _chunk_text: Splits text into word-based chunks, e.g. 128 words each.
 
-LLMRouter
+# LLMRouter
 
     Module: llm_router.py
     Role: Takes the final augmented prompt and dispatches it to a desired LLM backend.
@@ -252,7 +252,7 @@ LLMRouter
         together (requires TOGETHER_API_KEY)
         ollama (calls a local Llama-based server via an HTTP endpoint)
 
-RAGInference
+# RAGInference
 
     Module: rag_inference.py
     Role: Ties ingestion, FAISS indexing, and inference together.
@@ -263,7 +263,7 @@ RAGInference
         retrieve_context(query, top_k=3): Returns top-k chunk matches.
         generate_response(query): Merges user query and retrieved context, then calls LLMRouter.
 
-UI & User Experience
+# UI & User Experience
 
 Node.js serves a minimal front-end (index.html + style.css) that:
 
@@ -284,7 +284,7 @@ Best Practices for Indexing & Retrieval
     Vector Normalization: Most Sentence Transformers produce normalized embeddings. For FAISS IndexFlatIP, ensure embeddings are float32 and in consistent shape (N, d).
     Masking & Tokenization (for local model): The ProductionTransformer code includes a basic positional encoding but doesn’t show tokenization or generation loops. In production, integrate a real tokenizer (e.g., HuggingFace) for the local model.
 
-Deployment & Environment Variables
+# Deployment & Environment Variables
 
 Secrets:
 
@@ -317,7 +317,7 @@ node server.js
     The ProductionTransformer demonstrates a minimal PyTorch architecture, which can be extended into a more sophisticated local LLM or replaced entirely.
     The Node.js UI showcases straightforward ingestion and query forms, easily extensible with more advanced front-end features (drag-and-drop file uploads, user authentication, etc.).
 
-Potential Enhancements
+# Potential Enhancements
 
     Automatic chunk overlap: Provide some overlap between chunks to capture partial context boundaries.
     Better PDF parsing: Handle scanned PDFs (OCR), advanced layout (tables).
@@ -325,7 +325,7 @@ Potential Enhancements
     Metadata Search: Alongside text retrieval, store doc metadata to refine or filter results.
     Distributed Indexing: For very large corpora, consider a distributed FAISS or a specialized system (e.g., Milvus).
 
-Chunking Strategy
+# Chunking Strategy
 
 In rage_dataloader.py, every file is split into chunks of ~128 words (configurable). Word-level chunking ensures relevant segments remain contextually intact, while preventing excessively large vectors.
 
@@ -370,13 +370,13 @@ pip install python-docx        # optional, for DOCX parsing
    ```
    Open http://localhost:3000 in your browser
 
-   Usage
+# Usage
 
     Ingest Data: Provide chunk size, folder path (./docs), URLs, or paste text. Click Ingest.
     Query: Enter a query, pick LLM backend, click Submit.
     Result: The system retrieves top-k chunks from FAISS, merges them into a prompt, and calls the chosen LLM.
 
-Environment Variables
+# Environment Variables
 
     OPENAI_API_KEY
     TOGETHER_API_KEY
@@ -387,7 +387,7 @@ Environment Variables
    - Hit **Ingest**.  
    - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
 
-You now have a **production-oriented** RAGE system that can dynamically adapt chunk size for large context windows. Enjoy!
+You now have a **production-oriented** RAGE system that can dynamically adapt chunk size for large context windows. Open Source or go away.
 
    
 
