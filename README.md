@@ -383,39 +383,6 @@ Environment Variables
     OLLAMA_ENDPOINT (default http://localhost:11411)
 
 
- How to Use the Multi-Source RAG Project
- 
-# Project Overview
-
-This project sets up an end-to-end Retrieval-Augmented Generation pipeline that can:
-
-    Ingest files from local folders (TXT, Markdown, PDF, DOCX) or remote URLs.
-    Chunk text into manageable segments (~128 words each).
-    Embed chunks using a SentenceTransformer model and store them in a FAISS index.
-    Retrieve top-k relevant chunks for any user query.
-    Augment the user’s query with retrieved context, then generate a final response using either:
-        A local minimal PyTorch Transformer (ProductionTransformer), or
-        An external LLM API (OpenAI, Together.ai, or a local Ollama server).
-
-A Node.js server hosts a simple web front-end (index.html) for ingestion and query submission
-
-# Prerequisites
-
-    Python 3.7+
-    Node.js 14+
-    PyTorch installed (pip install torch torchvision torchaudio)
-    faiss-cpu (or faiss-gpu if you have a CUDA-compatible GPU)
-    sentence-transformers
-    PyPDF2 (for PDF ingestion) and python-docx (for DOCX ingestion), if you need those file types.
-
----
-
-## Running & Testing
-
-1. **Install** all Python deps and confirm Node version.  
-2. **`node server.js`**  
-3. **Open** [http://localhost:3000](http://localhost:3000):
-   - In **Data Ingestion**, set **Chunk Size** (e.g. 4096).  
    - Provide a folder path like `./docs` or a remote URL.  
    - Hit **Ingest**.  
    - Then enter a query (“Summarize the doc...”), pick LLM backend (local/OpenAI/etc.), and click **Submit**.
