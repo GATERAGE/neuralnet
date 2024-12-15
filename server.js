@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * Node.js server that hosts the RAG pipeline endpoints (/ingest, /inference),
+ * Node.js server that hosts the RAGE pipeline endpoints (/ingest, /inference),
  * logs “Python Ingest: Batches…” for batch progress lines from Python
  * rather than labeling them as errors.
  */
