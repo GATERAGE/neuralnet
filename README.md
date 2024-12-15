@@ -282,6 +282,7 @@ OLLAMA_ENDPOINT="http://localhost:11411"
     Start the server:
 
 ```bash
+export PYTHON_PATH="/full/path/to/venv/bin/python"
 node server.js
 ```
 
