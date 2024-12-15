@@ -95,7 +95,7 @@ ProductionTransformer
     Key Methods:
         forward(x, mask=None): Takes token IDs and optional causal mask, returns logits.
 
-# RAGEDataLoader
+# rage_dataloader
 
     Module: rage_dataloader.py
     Role: Collect, parse, chunk data from local or remote sources.
@@ -104,7 +104,7 @@ ProductionTransformer
         _load_pdf_file, _load_docx_file, _load_text_file: Specialized loaders for each format.
         _chunk_text: Splits text into word-based chunks, e.g. 128 words each.
 
-# LLMRouter
+# llm_router
 
     Module: llm_router.py
     Role: Takes the final augmented prompt and dispatches it to a desired LLM backend.
@@ -115,7 +115,7 @@ ProductionTransformer
         together (requires TOGETHER_API_KEY)
         ollama (calls a local Llama-based server via an HTTP endpoint)
 
-# RAGInference
+# rag_inference
 
     Module: rag_inference.py
     Role: Ties ingestion, FAISS indexing, and inference together.
