@@ -44,9 +44,9 @@ The ingestion results and final inference outputs are saved in a `memory/` folde
 
 # Introduction
 
-Retrieval-Augmented Generation (RAG) is a cutting-edge technique that bridges large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
+Retrieval-Augmented Generative Engine (RAGE) is a dynamic data bridge for large language models (LLMs) and external knowledge sources. By retrieving relevant text chunks from a vector index (e.g., FAISS) and augmenting the user query with this context, RAG-based systems can produce more grounded and up-to-date responses.
 
-The RAGE Transformer Project is an end-to-end implementation of a RAG pipeline. It focuses on multiple data types (TXT, MD, PDF, DOCX, remote URLs), a minimal local Transformer (ProductionTransformer), and integration with external LLM APIs (OpenAI, Together.ai, Ollama). A Node.js server provides a straightforward UI to ingest data and query the pipeline.
+The RAGE Transformer Project is an end-to-end implementation of a RAGE pipeline. It focuses on multiple data types (TXT, MD, PDF, DOCX, remote URLs), a minimal local Transformer (ProductionTransformer), and integration with external LLM APIs (OpenAI, Together.ai, Ollama). A Node.js server provides a straightforward UI to ingest data and query the pipeline.
 Project Goals
 
     Modular Data Ingestion: Handle local folders, file uploads, and remote URLs, chunkifying text for efficient retrieval.
