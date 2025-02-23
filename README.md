@@ -1,6 +1,10 @@
 # neuralnet
 an exploration of RAGE training integration with a mini transformer<br />
 thanks to the team at Stanford for the work on alpaca<br />
+```bash
+ollama serve
+ollama list
+ollama run deepseek-r1:1.5b
 
 ```bash
 neuralnet/
