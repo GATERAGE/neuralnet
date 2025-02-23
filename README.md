@@ -1,5 +1,5 @@
 # neuralnet
-an exploration of <a href="https://github.com/tatsu-lab/stanford_alpaca/blob/main/train.py">RAGE</> integration with a mini transformer
+an exploration of <a href="https://github.com/tatsu-lab/stanford_alpaca/blob/main/train.py">RAGE training</a> integration with a mini transformer
 
 ```bash
 neuralnet/
