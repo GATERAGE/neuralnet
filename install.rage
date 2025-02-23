@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if command -v python3.11 &>/dev/null; then
+    echo "Python 3.11 is installed, proceeding to create venv rage"
+    python3.1` -m venv rage
+else
+    echo "RAGE requires Python 3.11, but $(python3 --version) is installed. Proceeding with $(python3 --version)"
+    python3 -m venv rage
+fi
+source rage/bin/activate
+pip install -e .
