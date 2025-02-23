@@ -5,6 +5,7 @@ thanks to the team at Stanford for the work on alpaca<br />
 ollama serve
 ollama list
 ollama run deepseek-r1:1.5b
+```
 
 ```bash
 neuralnet/
