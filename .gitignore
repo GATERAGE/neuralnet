@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+*$py.class
+build/
+dist/
+*.egg-info/
+*.egg
+.pytest_cache/
+.coverage
+.tox/
+.ruff_cache/
+.mypy_cache/
+.venv/
+venv/
+rage/                  # neuralnet's own venv name per install.rage
+.env
+
+# Generated runtime data
+memory/
+faiss_index.index
+faiss_index_chunks.npy
+transformer_checkpoint.pt
+models/                # IPFS ModelPack download cache
+
+# Editors
+.vscode/
+.idea/
+*.swp
