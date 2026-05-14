@@ -2,19 +2,21 @@
 
 > # ⚠️ PROTOTYPE
 >
-> *This service is at **version 0.1.0a4** — an explicit PEP-440 alpha.
+> *This service is at **version 0.1.0a5** — an explicit PEP-440 alpha.
 > Interfaces will still change. Pin the exact commit if you build against
 > this. The other three GATERAGE repos (RAGE, aglm, mastermind) are at
 > 0.1.0+; this one is intentionally behind until 1.0.*
 >
-> *0.1.0a4: removed the two deprecated meta-files (`optimized_transformer.py`
-> + `ipfs_fetch.py`); their canonical extractions have lived at
-> `neuralnet.transformer_rage` and `neuralnet.modelpack` since 0.1.0a2.
-> Added 8 importorskip-gated integration tests covering the heavy paths
-> (transformer forward × 2, RAGE-flavored forward with GQA+RoPE, SimpleMind
-> reranker, LLMRouter construction, dataloader chunking, modelpack
-> init-template CLI). 24/24 tests passing locally with torch installed.
-> Canonical imports:*
+> *0.1.0a5: removed the 8 top-level deprecation shims (`production_transformer.py`,
+> `production_transformer_v1.py`, `production_transformer_rage.py`,
+> `llm_router.py`, `rag_inference.py`, `rage_dataloader.py`,
+> `simplemind_torch.py`, `ipfs_fetch_cli.py`). They shipped with
+> `DeprecationWarning` in 0.1.0a3 and stayed for two alpha cycles. The repo
+> root now holds only the entrypoint scripts (`generate.py`, `train.py`,
+> `simplemind_jax.py`) plus the Node.js UI. All imports go through the
+> `neuralnet.*` package directly. 24/24 tests still passing.*
+>
+> *Canonical imports (unchanged from 0.1.0a3):*
 >
 > ```python
 > from neuralnet import ProductionTransformer, ProductionTransformerRAGE
@@ -87,30 +89,29 @@ installed. Each `try/except ImportError` block keeps `import neuralnet`
 from failing when heavy deps are absent — the relevant class just
 doesn't appear in `__all__`.
 
-### 2.2 Top-level deprecation shims (removal in 0.2.0)
+### 2.2 Migration table (top-level shims removed in 0.1.0a5)
 
-| Old top-level file | New canonical location |
+The 8 top-level deprecation shims that shipped in 0.1.0a3 were removed in
+0.1.0a5 after two alpha cycles. The mapping consumers should follow:
+
+| ❌ Removed top-level import | ✅ Use instead |
 |---|---|
-| `production_transformer.py` | `neuralnet.transformer` |
-| `production_transformer_v1.py` | `neuralnet.transformer_v1` |
-| `production_transformer_rage.py` | `neuralnet.transformer_rage` |
-| `llm_router.py` | `neuralnet.router` |
-| `rag_inference.py` | `neuralnet.inference` |
-| `rage_dataloader.py` | `neuralnet.dataloader` |
-| `simplemind_torch.py` | `neuralnet.simplemind` |
-| `ipfs_fetch_cli.py` | `neuralnet.modelpack` |
+| `from production_transformer import ...` | `from neuralnet.transformer import ...` |
+| `from production_transformer_v1 import ...` | `from neuralnet.transformer_v1 import ...` |
+| `from production_transformer_rage import ...` | `from neuralnet.transformer_rage import ...` |
+| `from llm_router import ...` | `from neuralnet.router import ...` |
+| `from rag_inference import ...` | `from neuralnet.inference import ...` |
+| `from rage_dataloader import ...` | `from neuralnet.dataloader import ...` |
+| `from simplemind_torch import ...` | `from neuralnet.simplemind import ...` |
+| `from ipfs_fetch_cli import ...` | `from neuralnet.modelpack import ...` |
 
-Each shim is ~25 lines: a one-line `DeprecationWarning` followed by
-`from neuralnet.<module> import *`. Existing consumer code that imports
-the top-level name keeps working through one alpha cycle and surfaces
-a clear migration message.
+In 0.1.0a3 these imports still worked with a `DeprecationWarning`. In
+0.1.0a5 they raise `ImportError`. The migration is a sed.
 
 ### 2.3 Files at root that are NOT in the package
 
 | File | Why |
 |---|---|
-| `optimized_transformer.py` | DEPRECATED meta-file (code-generator). Replaced by `neuralnet.transformer_rage` in 0.1.0a2. Removal in 0.2.0. |
-| `ipfs_fetch.py` | DEPRECATED meta-file. Replaced by `neuralnet.modelpack` in 0.1.0a2. Removal in 0.2.0. |
 | `simplemind_jax.py` | Alternate JAX implementation of the reranker. Kept flat because the package picks the PyTorch variant; the JAX one is for offline training. |
 | `server.js`, `index.html`, `style.css` | Node.js UI server. Not Python; not part of the package. |
 | `train.py`, `generate.py` | Top-level entrypoint scripts. Use the package internally. |
@@ -267,7 +268,8 @@ When stable, neuralnet should:
 | **neuralnet-0.1.0a2** | Meta-file extraction + dotted-name fixes + deprecation headers + expanded tests | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a3** | Reorganize flat scripts into `neuralnet/` Python package | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a4** | Remove deprecated meta-files; 8 integration tests for heavy paths | Shipped 2026-05-14 |
-| **neuralnet-0.1.0a5** | Remove top-level deprecation shims (close the alpha window) | next |
+| **neuralnet-0.1.0a5** | Remove top-level deprecation shims (close the alpha window) | Shipped 2026-05-14 |
+| **neuralnet-0.1.0a6** | Apache-2.0 LICENSE normalization + `server.js` cwd-safety + README rewrite | next |
 | **neuralnet-0.2.0** | Stable `LLMRouter` API + integration tests against real Ollama | next |
 | **neuralnet-0.3.0** | `ProductionTransformer` consolidates to one canonical version | next |
 | **neuralnet-0.4.0** | ModelPack publishing CLI (`neuralnet pack publish`) + verifier | next |
@@ -280,7 +282,25 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 
 ## 9. Known issues / fixes
 
-### 0.1.0a4 (this release)
+### 0.1.0a5 (this release)
+
+- ✅ **Done**: removed the 8 top-level deprecation shims
+  (`production_transformer.py`, `production_transformer_v1.py`,
+  `production_transformer_rage.py`, `llm_router.py`, `rag_inference.py`,
+  `rage_dataloader.py`, `simplemind_torch.py`, `ipfs_fetch_cli.py`).
+  Two alpha cycles of `DeprecationWarning` is enough — consumers now
+  import from `neuralnet.*` directly.
+- ✅ **Done**: dropped `[tool.setuptools] py-modules` from `pyproject.toml`
+  (no more loose top-level Python modules to install).
+- ✅ **Done**: smoke tests updated: `test_top_level_shims_exist` →
+  `test_top_level_shims_removed`; new `test_top_level_python_layout`
+  pins the exact-3-file root state (`generate.py`, `train.py`,
+  `simplemind_jax.py`).
+- ✅ **Net effect**: repo went from 18 top-level Python files (0.1.0a1)
+  → 3 top-level Python files (0.1.0a5). Everything else lives in
+  `neuralnet/` or under `docs/` / `tests/`.
+
+### 0.1.0a4
 
 - ✅ **Done**: removed the two deprecated meta-files `optimized_transformer.py`
   and `ipfs_fetch.py`. Their content has lived at `neuralnet.transformer_rage`

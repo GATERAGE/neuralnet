@@ -1,20 +1,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # (c) 2024-2026 GATERAGE — neuralnet (RAGE + ProductionTransformer)
 #
-# ⚠️  PROTOTYPE — version 0.1.0a4 (PEP-440 alpha)
+# ⚠️  PROTOTYPE — version 0.1.0a5 (PEP-440 alpha)
 # Interfaces will change. Pin the exact commit if you depend on it.
 # Companion repos (RAGE / aglm / mastermind) are at 0.1.0+; this one
 # is intentionally behind until the API stabilizes.
 #
+# v0.1.0a5: removed the 8 top-level deprecation shims (production_transformer.py,
+#   production_transformer_v1.py, production_transformer_rage.py, llm_router.py,
+#   rag_inference.py, rage_dataloader.py, simplemind_torch.py, ipfs_fetch_cli.py).
+#   They shipped with DeprecationWarning in v0.1.0a3 — two alpha cycles is enough.
+#   Consumers now import directly from `neuralnet.*`. The repo root holds only
+#   `generate.py`, `train.py`, `simplemind_jax.py` plus `server.js`+`index.html`.
 # v0.1.0a4: removed the two deprecated meta-files (optimized_transformer.py,
-#   ipfs_fetch.py); the canonical extractions have been in place at
-#   neuralnet.transformer_rage / neuralnet.modelpack for two alpha cycles.
-#   Added importorskip-gated integration tests covering ProductionTransformer
-#   forward, RAGE-flavored forward, SimpleMind reranker, LLMRouter
-#   construction, dataloader chunking, modelpack init-template CLI.
+#   ipfs_fetch.py); added importorskip-gated integration tests.
 # v0.1.0a3: reorganized flat scripts into a `neuralnet/` Python package.
 #   Top-level files retained as deprecation shims (DeprecationWarning at
-#   import; removal scheduled for 0.2.0).
+#   import; now removed in 0.1.0a5).
 # v0.1.0a2: meta-files extracted into real importable modules
 #   (production_transformer_rage.py + ipfs_fetch_cli.py); renamed
 #   production_transformer_v1.0.0.py → production_transformer_v1.py;
@@ -27,7 +29,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuralnet"
-version = "0.1.0a4"
+version = "0.1.0a5"
 description = "PROTOTYPE — RAGE training + serving with a mini ProductionTransformer, FAISS retrieval, pluggable LLM router, IPFS ModelPack distribution, and a Node.js UI."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -106,33 +108,27 @@ Repository = "https://github.com/GATERAGE/neuralnet"
 "mindX consumer" = "https://github.com/agenticplace"
 "Status" = "https://github.com/GATERAGE/neuralnet/blob/main/docs/neuralnet_as_a_service.md"
 
-# v0.1.0a3 reorganized: the canonical code lives in the `neuralnet/`
-# Python package. Old top-level files (production_transformer.py,
-# llm_router.py, etc.) are now deprecation shims that re-export from
-# neuralnet.* and emit a DeprecationWarning at import. They will be
-# removed in 0.2.0.
-#
-# Two deprecated meta-files (optimized_transformer.py, ipfs_fetch.py)
-# are also kept at the root with prepended `# DEPRECATED — META-FILE`
-# headers; the extracted content lives at neuralnet.transformer_rage and
-# neuralnet.modelpack.
+# The canonical code lives in the `neuralnet/` Python package. As of
+# v0.1.0a5 the top-level deprecation shims (production_transformer.py,
+# llm_router.py, etc.) have been removed — consumers import directly
+# from `neuralnet.*` now. The two deprecated meta-files
+# (optimized_transformer.py, ipfs_fetch.py) were removed in v0.1.0a4.
 [tool.setuptools.packages.find]
 include = ["neuralnet*"]
 exclude = ["tests*", "examples*", "docs*"]
 
-# Top-level deprecation shims (one-line re-exports). Kept on py-modules
-# so they install alongside the package and the DeprecationWarning fires.
-[tool.setuptools]
-py-modules = [
-    "production_transformer",
-    "production_transformer_v1",
-    "production_transformer_rage",
-    "llm_router",
-    "rag_inference",
-    "rage_dataloader",
-    "simplemind_torch",
-    "ipfs_fetch_cli",
-]
+# Removed in v0.1.0a5. Kept here as a comment for changelog clarity.
+# [tool.setuptools]
+# py-modules = [
+#     "production_transformer",
+#     "production_transformer_v1",
+#     "production_transformer_rage",
+#     "llm_router",
+#     "rag_inference",
+#     "rage_dataloader",
+#     "simplemind_torch",
+#     "ipfs_fetch_cli",
+# ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -59,26 +59,18 @@ def test_install_rage_typo_fixed():
     assert "python3.11" in install or "python3 " in install, "install.rage missing python invocation"
 
 
-def test_top_level_shims_exist():
-    """v0.1.0a3: every former canonical script is now a deprecation shim."""
-    expected = [
-        "production_transformer.py",
-        "production_transformer_v1.py",
-        "production_transformer_rage.py",
-        "llm_router.py",
-        "rag_inference.py",
-        "rage_dataloader.py",
-        "simplemind_torch.py",
-        "ipfs_fetch_cli.py",
-        "server.js",
-    ]
-    for name in expected:
-        assert (ROOT / name).exists(), f"missing top-level file: {name}"
+def test_top_level_shims_removed():
+    """v0.1.0a5: the 8 deprecation shims are now gone.
 
+    They shipped with DeprecationWarning in v0.1.0a3 and stayed for two
+    alpha cycles (0.1.0a3 + 0.1.0a4). v0.1.0a5 closes the deprecation
+    window — consumers import directly from `neuralnet.*` now.
 
-def test_shims_emit_deprecation_warning():
-    """v0.1.0a3: each shim must contain a DeprecationWarning."""
-    shim_files = [
+    The repo root should hold only the entrypoint scripts that have always
+    been at root (generate.py, train.py, simplemind_jax.py) plus the
+    Node.js UI (server.js, index.html, style.css) plus installer + meta.
+    """
+    removed_shims = [
         "production_transformer.py",
         "production_transformer_v1.py",
         "production_transformer_rage.py",
@@ -88,11 +80,26 @@ def test_shims_emit_deprecation_warning():
         "simplemind_torch.py",
         "ipfs_fetch_cli.py",
     ]
-    for name in shim_files:
-        text = (ROOT / name).read_text(encoding="utf-8")
-        assert "DeprecationWarning" in text, f"{name} shim missing DeprecationWarning"
-        assert "DEPRECATION SHIM" in text, f"{name} shim missing DEPRECATION SHIM header"
-        assert "from neuralnet." in text, f"{name} shim missing neuralnet.* re-export"
+    for name in removed_shims:
+        assert not (ROOT / name).exists(), (
+            f"{name} should be removed in 0.1.0a5; consumers import "
+            f"from neuralnet.* directly now"
+        )
+
+
+def test_top_level_python_layout():
+    """v0.1.0a5: only entrypoint scripts + JAX variant remain at root."""
+    expected_root_python = {
+        "generate.py",        # generation entrypoint
+        "train.py",           # training loop
+        "simplemind_jax.py",  # alternate JAX reranker (offline training)
+    }
+    actual_root_python = {p.name for p in ROOT.glob("*.py")}
+    assert actual_root_python == expected_root_python, (
+        f"unexpected root-level .py files: "
+        f"extra={actual_root_python - expected_root_python}, "
+        f"missing={expected_root_python - actual_root_python}"
+    )
 
 
 def test_neuralnet_package_layout():
