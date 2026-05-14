@@ -1,0 +1,114 @@
+# SPDX-License-Identifier: Apache-2.0
+# (c) 2024-2026 GATERAGE — neuralnet (RAGE + ProductionTransformer)
+#
+# ⚠️  PROTOTYPE — version 0.1.0a1 (PEP-440 alpha)
+# Interfaces will change. Pin the exact commit if you depend on it.
+# Companion repos (RAGE / aglm / mastermind) are at 0.1.0+; this one
+# is intentionally behind until the API stabilizes.
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neuralnet"
+version = "0.1.0a1"
+description = "PROTOTYPE — RAGE training + serving with a mini ProductionTransformer, FAISS retrieval, pluggable LLM router, IPFS ModelPack distribution, and a Node.js UI."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+    { name = "GATERAGE / Professor Codephreak" },
+]
+keywords = [
+    "rage", "transformer", "neuralnet", "rag", "retrieval-augmented",
+    "modelpack", "ipfs", "prototype", "agentic"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Core deps are intentionally minimal so the scripts can be inspected
+# without installing the full ML stack. Use [torch] / [rage] / [all]
+# extras to pull in the heavy pieces.
+dependencies = []
+
+[project.optional-dependencies]
+torch = [
+    "torch>=2.0",
+    "numpy>=1.24",
+]
+rage = [
+    "rage>=0.2.0",            # github.com/GATERAGE/RAGE — retrieval substrate
+    "sentence-transformers>=2.6",
+    "faiss-cpu>=1.7",
+]
+data = [
+    "PyPDF2>=3.0",
+    "python-docx>=1.0",
+    "requests>=2.31",
+]
+serve = [
+    "openai>=1.0",
+    "requests>=2.31",
+]
+ipfs = [
+    "requests>=2.31",
+]
+jax = [
+    "jax>=0.4",
+    "jaxlib>=0.4",
+    "optax>=0.1",
+]
+all = [
+    "neuralnet[torch]",
+    "neuralnet[rage]",
+    "neuralnet[data]",
+    "neuralnet[serve]",
+    "neuralnet[ipfs]",
+]
+dev = [
+    "pytest>=8.0",
+    "ruff>=0.5",
+]
+
+[project.urls]
+Homepage = "https://github.com/GATERAGE/neuralnet"
+Documentation = "https://rage.pythai.net"
+Repository = "https://github.com/GATERAGE/neuralnet"
+"Companion: RAGE" = "https://github.com/GATERAGE/RAGE"
+"Companion: aGLM" = "https://github.com/GATERAGE/aglm"
+"Companion: mastermind" = "https://github.com/GATERAGE/mastermind"
+"mindX consumer" = "https://github.com/agenticplace"
+"Status" = "https://github.com/GATERAGE/neuralnet/blob/main/docs/neuralnet_as_a_service.md"
+
+# We do NOT auto-discover a package here. The current layout is flat
+# scripts at the repo root (production_transformer.py, llm_router.py,
+# rag_inference.py, etc.). A future stable release will reorganize
+# into a `neuralnet/` package; until then, install via `pip install -e .`
+# and import scripts by their file name from the repo root.
+[tool.setuptools]
+py-modules = [
+    "production_transformer",
+    "llm_router",
+    "rag_inference",
+    "rage_dataloader",
+    "simplemind_torch",
+    "ipfs_fetch",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100

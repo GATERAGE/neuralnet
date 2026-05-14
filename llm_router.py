@@ -24,7 +24,8 @@ class LLMRouter:
         # Env variables for external APIs
         self.openai_api_key = os.getenv("OPENAI_API_KEY", "")
         self.together_api_key = os.getenv("TOGETHER_API_KEY", "")
-        self.ollama_endpoint = os.getenv("OLLAMA_ENDPOINT", "http://localhost:11411")
+        # Ollama upstream default port: 11434.
+        self.ollama_endpoint = os.getenv("OLLAMA_ENDPOINT", "http://localhost:11434")
 
         openai.api_key = self.openai_api_key
 

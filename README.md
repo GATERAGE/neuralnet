@@ -1,4 +1,13 @@
 # neuralnet
+
+> ## ⚠️ PROTOTYPE — version 0.1.0a1 (PEP-440 alpha)
+>
+> Interfaces will change. Pin the exact commit if you build against this. The
+> companion GATERAGE repos ([RAGE](https://github.com/GATERAGE/RAGE),
+> [aglm](https://github.com/GATERAGE/aglm), [mastermind](https://github.com/GATERAGE/mastermind))
+> are at 0.1.0+; this one is intentionally behind until the API stabilizes.
+> Full service spec + roadmap to 1.0: [`docs/neuralnet_as_a_service.md`](docs/neuralnet_as_a_service.md).
+
 an exploration of RAGE training integration with a mini transformer<br />
 thanks to the team at Stanford for the work on alpaca<br />
 ```bash
