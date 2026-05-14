@@ -1,3 +1,14 @@
+# DEPRECATED — META-FILE (kept for historical context)
+#
+# This file is a code-generator: it embeds Python source as a triple-quoted
+# string and writes it to disk when executed. In neuralnet v0.1.0a2 the
+# embedded source was extracted via AST/line-slicing into a real importable
+# module: ipfs_fetch_cli.py
+#
+# Use ipfs_fetch_cli.py for imports. This file remains for git history + as a
+# reference of how the code was originally shipped. It will be removed in a
+# future release (probably 0.2.0).
+#
 from pathlib import Path
 import json
 from datetime import date

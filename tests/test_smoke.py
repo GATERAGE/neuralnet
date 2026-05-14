@@ -36,7 +36,8 @@ def test_pyproject_present_and_alpha():
     pyproject = ROOT / "pyproject.toml"
     assert pyproject.exists(), "pyproject.toml missing"
     text = pyproject.read_text(encoding="utf-8")
-    assert 'version = "0.1.0a1"' in text, "version should be 0.1.0a1 alpha"
+    # Accept any 0.1.0aN — alphas stack as we iterate to 1.0.
+    assert re.search(r'version = "0\.1\.0a\d+"', text), "version should match 0.1.0aN alpha"
     assert "Development Status :: 3 - Alpha" in text, "alpha classifier missing"
 
 
@@ -57,15 +58,53 @@ def test_install_rage_typo_fixed():
 def test_canonical_scripts_exist():
     expected = [
         "production_transformer.py",
+        "production_transformer_v1.py",      # added in 0.1.0a2 (renamed from v1.0.0.py)
+        "production_transformer_rage.py",    # added in 0.1.0a2 (extracted from optimized_transformer.py)
         "llm_router.py",
         "rag_inference.py",
         "rage_dataloader.py",
         "simplemind_torch.py",
-        "ipfs_fetch.py",
+        "ipfs_fetch.py",          # historical meta-file (deprecated)
+        "ipfs_fetch_cli.py",      # added in 0.1.0a2 (extracted from ipfs_fetch.py)
         "server.js",
     ]
     for name in expected:
         assert (ROOT / name).exists(), f"missing canonical file: {name}"
+
+
+def test_extracted_modules_parse():
+    """v0.1.0a2: extracted modules must be importable (parse-clean)."""
+    import ast
+    for name in ("production_transformer_rage.py", "ipfs_fetch_cli.py"):
+        p = ROOT / name
+        assert p.exists(), f"{name} missing"
+        ast.parse(p.read_text(encoding="utf-8"))
+
+
+def test_v1_filename_renamed():
+    """v0.1.0a2: dotted filename removed."""
+    assert (ROOT / "production_transformer_v1.py").exists(), "rename target missing"
+    assert not (ROOT / "production_transformer_v1.0.0.py").exists(), (
+        "old dotted file should be removed in 0.1.0a2"
+    )
+
+
+def test_generate_py_import_fixed():
+    """v0.1.0a2: generate.py no longer imports the illegal dotted module name."""
+    text = (ROOT / "generate.py").read_text(encoding="utf-8")
+    assert "production_transformer_rage_v1.1.0" not in text, (
+        "generate.py still has the broken dotted import"
+    )
+    assert "from production_transformer_rage import" in text, (
+        "generate.py should import from production_transformer_rage"
+    )
+
+
+def test_deprecation_header_on_meta_files():
+    """v0.1.0a2: the kept-as-historical meta-files have a clear deprecation header."""
+    for name in ("optimized_transformer.py", "ipfs_fetch.py"):
+        head = (ROOT / name).read_text(encoding="utf-8")[:200]
+        assert "DEPRECATED" in head, f"{name} missing deprecation header"
 
 
 def test_docs_canonical_files_exist():
@@ -85,7 +124,7 @@ def test_service_spec_has_prototype_banner():
     spec = (ROOT / "docs" / "neuralnet_as_a_service.md").read_text(encoding="utf-8")
     head = spec[:400]
     assert "PROTOTYPE" in head, "spec doc must start with PROTOTYPE banner"
-    assert "0.1.0a1" in spec, "spec doc must reference alpha version"
+    assert re.search(r"0\.1\.0a\d+", spec), "spec doc must reference an alpha version"
 
 
 def test_python_files_parse():
@@ -105,11 +144,13 @@ def test_python_files_parse():
     #                               re-targeted to optimized_transformer in 0.1.0a2)
     #   - production_transformer_v1.0.0.py: file name has dots; importable only
     #                               via importlib, not via `from ... import`
+    # Still-broken in 0.1.0a2 — the two meta-files have prepended deprecation
+    # headers but their embedded triple-quoted source is still the whole file
+    # content. They'll be removed in 0.2.0. The 0.1.0a1 dotted-name issues
+    # (generate.py + production_transformer_v1.0.0.py) are now fixed.
     SKIP = {
         "optimized_transformer.py",
         "ipfs_fetch.py",
-        "generate.py",
-        "production_transformer_v1.0.0.py",
     }
     for py in ROOT.rglob("*.py"):
         if ".git" in py.parts:

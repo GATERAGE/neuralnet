@@ -23,7 +23,7 @@ from typing import Any, Dict, Optional
 import torch
 
 # Local import: keep in same folder or adjust PYTHONPATH
-from production_transformer_rage_v1.1.0 import load_from_modelpack_local, ProductionTransformerRAGE  # type: ignore
+from production_transformer_rage import load_from_modelpack_local, ProductionTransformerRAGE  # type: ignore
 
 
 def top_k_top_p_filtering(logits: torch.Tensor, top_k: int = 0, top_p: float = 1.0) -> torch.Tensor:
