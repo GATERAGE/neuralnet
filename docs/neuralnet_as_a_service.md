@@ -2,19 +2,18 @@
 
 > # ⚠️ PROTOTYPE
 >
-> *This service is at **version 0.1.0a5** — an explicit PEP-440 alpha.
+> *This service is at **version 0.1.0a6** — an explicit PEP-440 alpha.
 > Interfaces will still change. Pin the exact commit if you build against
 > this. The other three GATERAGE repos (RAGE, aglm, mastermind) are at
 > 0.1.0+; this one is intentionally behind until 1.0.*
 >
-> *0.1.0a5: removed the 8 top-level deprecation shims (`production_transformer.py`,
-> `production_transformer_v1.py`, `production_transformer_rage.py`,
-> `llm_router.py`, `rag_inference.py`, `rage_dataloader.py`,
-> `simplemind_torch.py`, `ipfs_fetch_cli.py`). They shipped with
-> `DeprecationWarning` in 0.1.0a3 and stayed for two alpha cycles. The repo
-> root now holds only the entrypoint scripts (`generate.py`, `train.py`,
-> `simplemind_jax.py`) plus the Node.js UI. All imports go through the
-> `neuralnet.*` package directly. 24/24 tests still passing.*
+> *0.1.0a6 polish pass: LICENSE normalized from a small custom MIT file to
+> full Apache-2.0 text (matching the SPDX headers and pyproject classifier
+> in place since 0.1.0a1); `server.js` now invokes `python -m neuralnet.inference`
+> with `cwd: __dirname` (was still trying to spawn the `rag_inference.py`
+> shim removed in 0.1.0a5); README rewritten end-to-end for the 0.1.0a5
+> layout (the four-corner architecture, package-only imports, install +
+> quick-use, tests). 24/24 tests still passing.*
 >
 > *Canonical imports (unchanged from 0.1.0a3):*
 >
@@ -269,7 +268,8 @@ When stable, neuralnet should:
 | **neuralnet-0.1.0a3** | Reorganize flat scripts into `neuralnet/` Python package | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a4** | Remove deprecated meta-files; 8 integration tests for heavy paths | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a5** | Remove top-level deprecation shims (close the alpha window) | Shipped 2026-05-14 |
-| **neuralnet-0.1.0a6** | Apache-2.0 LICENSE normalization + `server.js` cwd-safety + README rewrite | next |
+| **neuralnet-0.1.0a6** | Apache-2.0 LICENSE normalization + `server.js` cwd-safety + README rewrite | Shipped 2026-05-14 |
+| **neuralnet-0.1.0a7** | `tests/test_server_js.py` smoke test for the Node.js routes | next |
 | **neuralnet-0.2.0** | Stable `LLMRouter` API + integration tests against real Ollama | next |
 | **neuralnet-0.3.0** | `ProductionTransformer` consolidates to one canonical version | next |
 | **neuralnet-0.4.0** | ModelPack publishing CLI (`neuralnet pack publish`) + verifier | next |
@@ -282,7 +282,22 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 
 ## 9. Known issues / fixes
 
-### 0.1.0a5 (this release)
+### 0.1.0a6 (this release)
+
+- ✅ **Done**: LICENSE normalized to full Apache-2.0 text. The previous file
+  was a 1058b custom MIT notice, even though every SPDX header and the
+  pyproject classifier said Apache-2.0 since 0.1.0a1. The mismatch is now
+  resolved.
+- ✅ **Done**: `server.js` was still spawning the removed `rag_inference.py`
+  shim (broken since 0.1.0a5). Both `/ingest` and `/inference` routes now
+  spawn `python -m neuralnet.inference` with `cwd: __dirname`, so the
+  server works regardless of where it's launched from.
+- ✅ **Done**: README rewritten end-to-end. The old README dated from 2024
+  and had accumulated stacked banners. The new one leads with the 0.1.0a5
+  layout, the four-corner GATERAGE architecture, install + quick-use
+  examples, and a pointer to the spec.
+
+### 0.1.0a5
 
 - ✅ **Done**: removed the 8 top-level deprecation shims
   (`production_transformer.py`, `production_transformer_v1.py`,

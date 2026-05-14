@@ -1,11 +1,16 @@
 # SPDX-License-Identifier: Apache-2.0
 # (c) 2024-2026 GATERAGE — neuralnet (RAGE + ProductionTransformer)
 #
-# ⚠️  PROTOTYPE — version 0.1.0a5 (PEP-440 alpha)
+# ⚠️  PROTOTYPE — version 0.1.0a6 (PEP-440 alpha)
 # Interfaces will change. Pin the exact commit if you depend on it.
 # Companion repos (RAGE / aglm / mastermind) are at 0.1.0+; this one
 # is intentionally behind until the API stabilizes.
 #
+# v0.1.0a6: LICENSE normalized to full Apache-2.0 text (was a 1058b
+#   custom MIT file); fixed `server.js` to invoke `python -m neuralnet.inference`
+#   with `cwd: __dirname` (was spawning the removed `rag_inference.py` from
+#   wherever the server was launched); README rewritten to reflect the
+#   0.1.0a5 layout (3 root-level scripts + neuralnet/ package).
 # v0.1.0a5: removed the 8 top-level deprecation shims (production_transformer.py,
 #   production_transformer_v1.py, production_transformer_rage.py, llm_router.py,
 #   rag_inference.py, rage_dataloader.py, simplemind_torch.py, ipfs_fetch_cli.py).
@@ -29,7 +34,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuralnet"
-version = "0.1.0a5"
+version = "0.1.0a6"
 description = "PROTOTYPE — RAGE training + serving with a mini ProductionTransformer, FAISS retrieval, pluggable LLM router, IPFS ModelPack distribution, and a Node.js UI."
 readme = "README.md"
 requires-python = ">=3.10"

@@ -31,7 +31,7 @@ Public symbols re-exported here for convenience:
 """
 from __future__ import annotations
 
-__version__ = "0.1.0a5"
+__version__ = "0.1.0a6"
 
 # ─── public top-level re-exports ────────────────────────────────────────
 # Heavy modules are imported lazily inside try/except so that

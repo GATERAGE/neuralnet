@@ -75,8 +75,15 @@ const server = http.createServer((req, res) => {
         urls: urlpath ? [urlpath] : []
       };
 
-      // Spawn Python ingestion script
-      const pyProcess = spawn(pythonExecutable, ['rag_inference.py', 'ingest']);
+      // Spawn the Python ingestion entry point.
+      // Since v0.1.0a5 the canonical code lives in the `neuralnet/` package.
+      // Use `-m neuralnet.inference` and pin cwd to this file's directory so
+      // the server works regardless of the caller's working directory.
+      const pyProcess = spawn(
+        pythonExecutable,
+        ['-m', 'neuralnet.inference', 'ingest'],
+        { cwd: __dirname }
+      );
       pyProcess.stdin.write(JSON.stringify(ingestionPayload));
       pyProcess.stdin.end();
 
@@ -114,7 +121,12 @@ const server = http.createServer((req, res) => {
       const userQuery = params.get('query') || 'No query provided';
       const backend = params.get('backend') || 'local';
 
-      const pyProcess = spawn(pythonExecutable, ['rag_inference.py', userQuery, backend]);
+      // Same cwd-safety + package-module convention as /ingest above.
+      const pyProcess = spawn(
+        pythonExecutable,
+        ['-m', 'neuralnet.inference', userQuery, backend],
+        { cwd: __dirname }
+      );
 
       let resultData = '';
       pyProcess.stdout.on('data', (data) => {
