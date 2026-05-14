@@ -1,11 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
 # (c) 2024-2026 GATERAGE — neuralnet (RAGE + ProductionTransformer)
 #
-# ⚠️  PROTOTYPE — version 0.1.0a2 (PEP-440 alpha)
+# ⚠️  PROTOTYPE — version 0.1.0a3 (PEP-440 alpha)
 # Interfaces will change. Pin the exact commit if you depend on it.
 # Companion repos (RAGE / aglm / mastermind) are at 0.1.0+; this one
 # is intentionally behind until the API stabilizes.
 #
+# v0.1.0a3: reorganized flat scripts into a `neuralnet/` Python package.
+#   Top-level files retained as deprecation shims (DeprecationWarning at
+#   import; removal scheduled for 0.2.0).
 # v0.1.0a2: meta-files extracted into real importable modules
 #   (production_transformer_rage.py + ipfs_fetch_cli.py); renamed
 #   production_transformer_v1.0.0.py → production_transformer_v1.py;
@@ -18,7 +21,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuralnet"
-version = "0.1.0a2"
+version = "0.1.0a3"
 description = "PROTOTYPE — RAGE training + serving with a mini ProductionTransformer, FAISS retrieval, pluggable LLM router, IPFS ModelPack distribution, and a Node.js UI."
 readme = "README.md"
 requires-python = ">=3.10"
@@ -97,27 +100,32 @@ Repository = "https://github.com/GATERAGE/neuralnet"
 "mindX consumer" = "https://github.com/agenticplace"
 "Status" = "https://github.com/GATERAGE/neuralnet/blob/main/docs/neuralnet_as_a_service.md"
 
-# We do NOT auto-discover a package here. The current layout is flat
-# scripts at the repo root (production_transformer.py, llm_router.py,
-# rag_inference.py, etc.). A future stable release will reorganize
-# into a `neuralnet/` package; until then, install via `pip install -e .`
-# and import scripts by their file name from the repo root.
+# v0.1.0a3 reorganized: the canonical code lives in the `neuralnet/`
+# Python package. Old top-level files (production_transformer.py,
+# llm_router.py, etc.) are now deprecation shims that re-export from
+# neuralnet.* and emit a DeprecationWarning at import. They will be
+# removed in 0.2.0.
 #
-# Two pairs of files coexist:
-#   - production_transformer_rage.py  (canonical, importable, v0.1.0a2+)
-#     optimized_transformer.py         (deprecated meta-file generator)
-#   - ipfs_fetch_cli.py                (canonical, importable, v0.1.0a2+)
-#     ipfs_fetch.py                    (deprecated meta-file generator)
+# Two deprecated meta-files (optimized_transformer.py, ipfs_fetch.py)
+# are also kept at the root with prepended `# DEPRECATED — META-FILE`
+# headers; the extracted content lives at neuralnet.transformer_rage and
+# neuralnet.modelpack.
+[tool.setuptools.packages.find]
+include = ["neuralnet*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+# Top-level deprecation shims (one-line re-exports). Kept on py-modules
+# so they install alongside the package and the DeprecationWarning fires.
 [tool.setuptools]
 py-modules = [
     "production_transformer",
-    "production_transformer_v1",        # renamed from v1.0.0.py in 0.1.0a2
-    "production_transformer_rage",      # extracted from optimized_transformer.py in 0.1.0a2
+    "production_transformer_v1",
+    "production_transformer_rage",
     "llm_router",
     "rag_inference",
     "rage_dataloader",
     "simplemind_torch",
-    "ipfs_fetch_cli",                   # extracted from ipfs_fetch.py in 0.1.0a2
+    "ipfs_fetch_cli",
 ]
 
 [tool.pytest.ini_options]

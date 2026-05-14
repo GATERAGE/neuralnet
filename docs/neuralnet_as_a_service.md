@@ -2,18 +2,22 @@
 
 > # ⚠️ PROTOTYPE
 >
-> *This service is at **version 0.1.0a2** — an explicit PEP-440 alpha. The
-> primitives below are documented as a target; the implementation is the
-> reference scripts at the repo root and is **not yet stable**. Interfaces
-> will change. Pin the exact commit if you build against it. The other
-> three GATERAGE repos (RAGE, aglm, mastermind) are at 0.1.0+; this one
-> is intentionally behind until the API stabilizes.*
+> *This service is at **version 0.1.0a3** — an explicit PEP-440 alpha. The
+> primitives below are now organized as a proper Python package
+> (`neuralnet/`), but interfaces will still change. Pin the exact commit
+> if you build against this. The other three GATERAGE repos (RAGE, aglm,
+> mastermind) are at 0.1.0+; this one is intentionally behind until 1.0.*
 >
-> *0.1.0a2 cleanup: meta-files `optimized_transformer.py` + `ipfs_fetch.py`
-> extracted into real importable modules `production_transformer_rage.py`
-> + `ipfs_fetch_cli.py`. Dotted-name import in `generate.py` fixed.
-> Dotted-name filename `production_transformer_v1.0.0.py` renamed to
-> `production_transformer_v1.py`.*
+> *0.1.0a3: flat scripts reorganized into a `neuralnet/` Python package.
+> Top-level files retained as deprecation shims (DeprecationWarning at
+> import; removal scheduled for 0.2.0). Canonical imports are now:*
+>
+> ```python
+> from neuralnet import ProductionTransformer, ProductionTransformerRAGE
+> from neuralnet.router import LLMRouter
+> from neuralnet.inference import RAGInference
+> from neuralnet.modelpack import fetch_modelpack
+> ```
 
 Companion specs:
 
@@ -51,23 +55,62 @@ agnostic home, with the caveat that the API is still moving.
 
 ---
 
-## 2. The six modules (current state)
+## 2. The package (since v0.1.0a3)
 
-| Script | What it provides | Stability |
+The canonical code lives in the `neuralnet/` Python package. The
+top-level scripts that shipped through v0.1.0a2 are now deprecation
+shims that re-export from the package and emit a `DeprecationWarning`
+at import time.
+
+### 2.1 Canonical package modules
+
+| Module | What it provides | Stability |
 |---|---|---|
-| `production_transformer.py` | Minimal decoder transformer (127 LOC, teaching version). | reference |
-| `production_transformer_v1.py` *(was `v1.0.0.py`)* | Cleaned-up: pre-norm, bool allow-masks, optional SDPA, optional KV cache. | reference |
-| `production_transformer_rage.py` *(new in 0.1.0a2, extracted from `optimized_transformer.py`)* | RAGE-flavored v1.1.0: RMSNorm + SwiGLU + GQA + RoPE + ModelPack loader. **Canonical importable.** | prototype |
-| `optimized_transformer.py` | DEPRECATED meta-file (kept for history). Use `production_transformer_rage.py` for imports. | deprecated |
-| `llm_router.py` | `LLMRouter` — pluggable backend router across `local` / `openai` / `together` / `ollama`. | prototype |
-| `rag_inference.py` | `RAGInference` — composes `RAGEDataLoader` + FAISS + `LLMRouter` into one orchestrator. | prototype |
-| `rage_dataloader.py` | `RAGEDataLoader` — chunks `.txt`/`.md`/`.pdf`/`.docx` and remote URLs. | prototype |
-| `ipfs_fetch_cli.py` *(new in 0.1.0a2, extracted from `ipfs_fetch.py`)* | ModelPack manifest + shard fetch by CID with sha256 verification + cache. **Canonical importable.** | prototype |
-| `ipfs_fetch.py` | DEPRECATED meta-file (kept for history). Use `ipfs_fetch_cli.py` for imports. | deprecated |
-| `simplemind_torch.py` | Small MLP reranker (PyTorch). "Policy brain" that decides which retrieved chunks to include. | prototype |
-| `simplemind_jax.py` | Same in JAX (offline training option). | prototype |
-| `server.js` | Node.js HTTP server. Endpoints: `POST /ingest`, `POST /inference`. | prototype |
-| `train.py` / `generate.py` | Training loop + generation entrypoint for the local transformer. | exploratory |
+| `neuralnet.transformer` | Minimal decoder transformer (127 LOC, teaching version). Classes: `PositionalEncoding`, `MultiHeadSelfAttention`, `TransformerBlock`, `ProductionTransformer`. | reference |
+| `neuralnet.transformer_v1` | Cleaned-up single-file version: pre-norm, bool allow-masks, optional SDPA, optional KV cache. | reference |
+| `neuralnet.transformer_rage` | RAGE-flavored v1.1.0: RMSNorm + SwiGLU + GQA + RoPE + ModelPack loader. Classes: `RAGETransformerConfig`, `ModelPack`, `ProductionTransformerRAGE`. | prototype |
+| `neuralnet.router` | `LLMRouter` — pluggable backend router across `local` / `openai` / `together` / `ollama`. | prototype |
+| `neuralnet.inference` | `RAGInference` — composes `RAGEDataLoader` + FAISS + `LLMRouter` into one orchestrator. | prototype |
+| `neuralnet.dataloader` | `RAGEDataLoader` — chunks `.txt`/`.md`/`.pdf`/`.docx` and remote URLs. | prototype |
+| `neuralnet.simplemind` | Small MLP reranker (PyTorch). "Policy brain" that decides which retrieved chunks to include. | prototype |
+| `neuralnet.modelpack` | ModelPack manifest + shard fetch by CID with sha256 verification + cache. | prototype |
+
+The `neuralnet/__init__.py` lazily re-exports the heavy classes
+(`ProductionTransformer`, `ProductionTransformerRAGE`, `RAGETransformerConfig`,
+`ModelPack`, `LLMRouter`, `RAGInference`, `RAGEDataLoader`) so
+`from neuralnet import ProductionTransformer` works once `torch` is
+installed. Each `try/except ImportError` block keeps `import neuralnet`
+from failing when heavy deps are absent — the relevant class just
+doesn't appear in `__all__`.
+
+### 2.2 Top-level deprecation shims (removal in 0.2.0)
+
+| Old top-level file | New canonical location |
+|---|---|
+| `production_transformer.py` | `neuralnet.transformer` |
+| `production_transformer_v1.py` | `neuralnet.transformer_v1` |
+| `production_transformer_rage.py` | `neuralnet.transformer_rage` |
+| `llm_router.py` | `neuralnet.router` |
+| `rag_inference.py` | `neuralnet.inference` |
+| `rage_dataloader.py` | `neuralnet.dataloader` |
+| `simplemind_torch.py` | `neuralnet.simplemind` |
+| `ipfs_fetch_cli.py` | `neuralnet.modelpack` |
+
+Each shim is ~25 lines: a one-line `DeprecationWarning` followed by
+`from neuralnet.<module> import *`. Existing consumer code that imports
+the top-level name keeps working through one alpha cycle and surfaces
+a clear migration message.
+
+### 2.3 Files at root that are NOT in the package
+
+| File | Why |
+|---|---|
+| `optimized_transformer.py` | DEPRECATED meta-file (code-generator). Replaced by `neuralnet.transformer_rage` in 0.1.0a2. Removal in 0.2.0. |
+| `ipfs_fetch.py` | DEPRECATED meta-file. Replaced by `neuralnet.modelpack` in 0.1.0a2. Removal in 0.2.0. |
+| `simplemind_jax.py` | Alternate JAX implementation of the reranker. Kept flat because the package picks the PyTorch variant; the JAX one is for offline training. |
+| `server.js`, `index.html`, `style.css` | Node.js UI server. Not Python; not part of the package. |
+| `train.py`, `generate.py` | Top-level entrypoint scripts. Use the package internally. |
+| `install.rage` | Bash installer. |
 
 Read [`TECHNICAL.md`](TECHNICAL.md) for the architecture diagram and the
 full data-flow walk-through. Read [`SIMPLEMIND_IN_RAGE.md`](SIMPLEMIND_IN_RAGE.md)
@@ -231,31 +274,46 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 
 ## 9. Known issues / fixes
 
-### 0.1.0a2 (this release)
+### 0.1.0a3 (this release)
+
+- ✅ **Fixed**: flat scripts reorganized into a `neuralnet/` Python package
+  (8 canonical modules: `transformer`, `transformer_v1`, `transformer_rage`,
+  `router`, `inference`, `dataloader`, `simplemind`, `modelpack`).
+- ✅ **Fixed**: top-level files retained as deprecation shims that emit
+  `DeprecationWarning` and re-export from the package — existing consumers
+  keep working through one alpha cycle.
+- ✅ **Fixed**: cross-module imports inside the package now use relative form
+  (`from .transformer import ProductionTransformer`).
+- ✅ **Fixed**: `generate.py` updated to `from neuralnet.transformer_rage import ...`.
+- ✅ **Fixed**: `neuralnet/__init__.py` lazy-imports heavy classes inside
+  `try/except ImportError` so `import neuralnet` works without torch installed.
+
+### 0.1.0a2
 
 - ✅ **Fixed**: meta-file `optimized_transformer.py` extracted into the real
-  module `production_transformer_rage.py` (501 LOC; classes: `RAGETransformerConfig`,
-  `ModelPack`, `RMSNorm`, `RotaryEmbedding`, `SwiGLU`, `GQASelfAttention`,
-  `DecoderBlock`, `ProductionTransformerRAGE`, helpers).
+  module `production_transformer_rage.py` (501 LOC; now lives at
+  `neuralnet/transformer_rage.py`).
 - ✅ **Fixed**: meta-file `ipfs_fetch.py` extracted into the real module
-  `ipfs_fetch_cli.py` (250 LOC). Both originals kept with a prepended
-  `# DEPRECATED — META-FILE` header for git history.
-- ✅ **Fixed**: `generate.py` no longer imports `production_transformer_rage_v1.1.0`
-  (an illegal dotted module name) — now imports from `production_transformer_rage`.
-- ✅ **Fixed**: `production_transformer_v1.0.0.py` renamed to
-  `production_transformer_v1.py` so it imports cleanly.
+  `ipfs_fetch_cli.py` (250 LOC; now lives at `neuralnet/modelpack.py`).
+- ✅ **Fixed**: `generate.py` no longer imports `production_transformer_rage_v1.1.0`.
+- ✅ **Fixed**: `production_transformer_v1.0.0.py` renamed.
 
 ### 0.1.0a1
 
 - ✅ **Fixed**: `llm_router.py` defaulted Ollama port to `11411` (typo); upstream is `11434`.
 - ✅ **Fixed**: `install.rage` had `python3.1\`` typo in the venv-creation line.
 
-### Open (planned for 0.2.0+)
+### Open (planned for 0.1.0a4 / 0.2.0)
 
-- ⚠️ Reorganize flat scripts into a `neuralnet/` Python package.
-- ⚠️ No integration tests for heavy paths (FAISS, sentence-transformers, transformer forward) — smoke tests only. Adding in 0.2.0.
-- ⚠️ `server.js` spawns `python` with assumptions about cwd; move to subprocess-relative paths.
-- ⚠️ The two `optimized_transformer.py` / `ipfs_fetch.py` meta-files will be removed entirely in 0.2.0 once the deprecation window closes.
+- ⚠️ Remove the two deprecated meta-files (`optimized_transformer.py`,
+  `ipfs_fetch.py`) entirely. Currently they have prepended deprecation
+  headers but the embedded triple-quoted source remains for git history.
+- ⚠️ Remove the top-level deprecation shims after one alpha cycle (planned
+  for 0.2.0).
+- ⚠️ No integration tests for heavy paths (FAISS, sentence-transformers,
+  transformer forward) — smoke tests only. Adding in 0.1.0a4.
+- ⚠️ `server.js` spawns `python` with assumptions about cwd; move to
+  subprocess-relative paths.
 - ⚠️ Normalize LICENSE to pure Apache-2.0 (currently a small custom file).
 
 ---

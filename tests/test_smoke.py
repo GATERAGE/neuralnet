@@ -42,8 +42,12 @@ def test_pyproject_present_and_alpha():
 
 
 def test_ollama_port_is_canonical():
-    """Ollama upstream default is 11434, not 11411."""
-    router = (ROOT / "llm_router.py").read_text(encoding="utf-8")
+    """Ollama upstream default is 11434, not 11411.
+
+    Since 0.1.0a3, the canonical content lives at neuralnet/router.py
+    (the top-level llm_router.py is a deprecation shim).
+    """
+    router = (ROOT / "neuralnet" / "router.py").read_text(encoding="utf-8")
     assert "11434" in router, "Ollama port should be 11434"
     assert "11411" not in router, "11411 typo should be fixed"
 
@@ -55,53 +59,112 @@ def test_install_rage_typo_fixed():
     assert "python3.11" in install or "python3 " in install, "install.rage missing python invocation"
 
 
-def test_canonical_scripts_exist():
+def test_top_level_shims_exist():
+    """v0.1.0a3: every former canonical script is now a deprecation shim."""
     expected = [
         "production_transformer.py",
-        "production_transformer_v1.py",      # added in 0.1.0a2 (renamed from v1.0.0.py)
-        "production_transformer_rage.py",    # added in 0.1.0a2 (extracted from optimized_transformer.py)
+        "production_transformer_v1.py",
+        "production_transformer_rage.py",
         "llm_router.py",
         "rag_inference.py",
         "rage_dataloader.py",
         "simplemind_torch.py",
-        "ipfs_fetch.py",          # historical meta-file (deprecated)
-        "ipfs_fetch_cli.py",      # added in 0.1.0a2 (extracted from ipfs_fetch.py)
+        "ipfs_fetch_cli.py",
         "server.js",
     ]
     for name in expected:
-        assert (ROOT / name).exists(), f"missing canonical file: {name}"
+        assert (ROOT / name).exists(), f"missing top-level file: {name}"
 
 
-def test_extracted_modules_parse():
-    """v0.1.0a2: extracted modules must be importable (parse-clean)."""
+def test_shims_emit_deprecation_warning():
+    """v0.1.0a3: each shim must contain a DeprecationWarning."""
+    shim_files = [
+        "production_transformer.py",
+        "production_transformer_v1.py",
+        "production_transformer_rage.py",
+        "llm_router.py",
+        "rag_inference.py",
+        "rage_dataloader.py",
+        "simplemind_torch.py",
+        "ipfs_fetch_cli.py",
+    ]
+    for name in shim_files:
+        text = (ROOT / name).read_text(encoding="utf-8")
+        assert "DeprecationWarning" in text, f"{name} shim missing DeprecationWarning"
+        assert "DEPRECATION SHIM" in text, f"{name} shim missing DEPRECATION SHIM header"
+        assert "from neuralnet." in text, f"{name} shim missing neuralnet.* re-export"
+
+
+def test_neuralnet_package_layout():
+    """v0.1.0a3: the canonical content lives at neuralnet/<module>.py."""
+    pkg = ROOT / "neuralnet"
+    assert pkg.is_dir(), "neuralnet/ package directory missing"
+    assert (pkg / "__init__.py").exists(), "neuralnet/__init__.py missing"
+    expected_modules = [
+        "transformer.py",
+        "transformer_v1.py",
+        "transformer_rage.py",
+        "router.py",
+        "inference.py",
+        "dataloader.py",
+        "simplemind.py",
+        "modelpack.py",
+    ]
+    for name in expected_modules:
+        assert (pkg / name).exists(), f"missing neuralnet/{name}"
+
+
+def test_neuralnet_package_parses():
+    """v0.1.0a3: every file in neuralnet/ must be syntactically valid."""
     import ast
-    for name in ("production_transformer_rage.py", "ipfs_fetch_cli.py"):
-        p = ROOT / name
-        assert p.exists(), f"{name} missing"
-        ast.parse(p.read_text(encoding="utf-8"))
+    pkg = ROOT / "neuralnet"
+    for py in sorted(pkg.glob("*.py")):
+        try:
+            ast.parse(py.read_text(encoding="utf-8"))
+        except SyntaxError as e:
+            raise AssertionError(f"syntax error in {py}: {e}")
 
 
-def test_v1_filename_renamed():
-    """v0.1.0a2: dotted filename removed."""
-    assert (ROOT / "production_transformer_v1.py").exists(), "rename target missing"
-    assert not (ROOT / "production_transformer_v1.0.0.py").exists(), (
-        "old dotted file should be removed in 0.1.0a2"
+def test_neuralnet_internal_imports_are_relative():
+    """v0.1.0a3: cross-module imports inside the package use relative form."""
+    pkg = ROOT / "neuralnet"
+    # router.py was the main file with cross-module imports
+    router = (pkg / "router.py").read_text(encoding="utf-8")
+    assert "from .transformer import" in router, (
+        "neuralnet/router.py should import via `from .transformer import ProductionTransformer`"
+    )
+    inference = (pkg / "inference.py").read_text(encoding="utf-8")
+    assert "from .dataloader import" in inference
+    assert "from .router import" in inference
+
+
+def test_init_py_version_matches_pyproject():
+    """v0.1.0a3: __version__ in neuralnet/__init__.py matches pyproject.toml."""
+    init = (ROOT / "neuralnet" / "__init__.py").read_text(encoding="utf-8")
+    py = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    init_match = re.search(r'__version__\s*=\s*"([^"]+)"', init)
+    py_match = re.search(r'version\s*=\s*"([^"]+)"', py)
+    assert init_match and py_match, "version markers missing"
+    assert init_match.group(1) == py_match.group(1), (
+        f"version mismatch: __init__ has {init_match.group(1)!r}, "
+        f"pyproject has {py_match.group(1)!r}"
     )
 
 
-def test_generate_py_import_fixed():
-    """v0.1.0a2: generate.py no longer imports the illegal dotted module name."""
+def test_generate_py_uses_package_import():
+    """v0.1.0a3: generate.py imports from the neuralnet package."""
     text = (ROOT / "generate.py").read_text(encoding="utf-8")
-    assert "production_transformer_rage_v1.1.0" not in text, (
-        "generate.py still has the broken dotted import"
+    assert "from neuralnet.transformer_rage import" in text, (
+        "generate.py should import from neuralnet.transformer_rage in 0.1.0a3"
     )
-    assert "from production_transformer_rage import" in text, (
-        "generate.py should import from production_transformer_rage"
+    # The flat-import line from 0.1.0a2 should be gone.
+    assert "from production_transformer_rage import" not in text, (
+        "generate.py still has the flat (non-package) import"
     )
 
 
 def test_deprecation_header_on_meta_files():
-    """v0.1.0a2: the kept-as-historical meta-files have a clear deprecation header."""
+    """The kept-as-historical meta-files still have a clear deprecation header."""
     for name in ("optimized_transformer.py", "ipfs_fetch.py"):
         head = (ROOT / name).read_text(encoding="utf-8")[:200]
         assert "DEPRECATED" in head, f"{name} missing deprecation header"
@@ -144,10 +207,9 @@ def test_python_files_parse():
     #                               re-targeted to optimized_transformer in 0.1.0a2)
     #   - production_transformer_v1.0.0.py: file name has dots; importable only
     #                               via importlib, not via `from ... import`
-    # Still-broken in 0.1.0a2 — the two meta-files have prepended deprecation
-    # headers but their embedded triple-quoted source is still the whole file
-    # content. They'll be removed in 0.2.0. The 0.1.0a1 dotted-name issues
-    # (generate.py + production_transformer_v1.0.0.py) are now fixed.
+    # Still-broken in 0.1.0a3 — the two original meta-files (kept for git
+    # history) embed Python source as triple-quoted strings. To be removed
+    # in 0.2.0 once the deprecation window closes.
     SKIP = {
         "optimized_transformer.py",
         "ipfs_fetch.py",
