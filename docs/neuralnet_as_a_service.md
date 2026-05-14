@@ -2,15 +2,19 @@
 
 > # ⚠️ PROTOTYPE
 >
-> *This service is at **version 0.1.0a3** — an explicit PEP-440 alpha. The
-> primitives below are now organized as a proper Python package
-> (`neuralnet/`), but interfaces will still change. Pin the exact commit
-> if you build against this. The other three GATERAGE repos (RAGE, aglm,
-> mastermind) are at 0.1.0+; this one is intentionally behind until 1.0.*
+> *This service is at **version 0.1.0a4** — an explicit PEP-440 alpha.
+> Interfaces will still change. Pin the exact commit if you build against
+> this. The other three GATERAGE repos (RAGE, aglm, mastermind) are at
+> 0.1.0+; this one is intentionally behind until 1.0.*
 >
-> *0.1.0a3: flat scripts reorganized into a `neuralnet/` Python package.
-> Top-level files retained as deprecation shims (DeprecationWarning at
-> import; removal scheduled for 0.2.0). Canonical imports are now:*
+> *0.1.0a4: removed the two deprecated meta-files (`optimized_transformer.py`
+> + `ipfs_fetch.py`); their canonical extractions have lived at
+> `neuralnet.transformer_rage` and `neuralnet.modelpack` since 0.1.0a2.
+> Added 8 importorskip-gated integration tests covering the heavy paths
+> (transformer forward × 2, RAGE-flavored forward with GQA+RoPE, SimpleMind
+> reranker, LLMRouter construction, dataloader chunking, modelpack
+> init-template CLI). 24/24 tests passing locally with torch installed.
+> Canonical imports:*
 >
 > ```python
 > from neuralnet import ProductionTransformer, ProductionTransformerRAGE
@@ -261,7 +265,9 @@ When stable, neuralnet should:
 |---|---|---|
 | **neuralnet-0.1.0a1** | Apache-2.0 + pyproject.toml + this spec + tests + typo fixes | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a2** | Meta-file extraction + dotted-name fixes + deprecation headers + expanded tests | Shipped 2026-05-14 |
-| **neuralnet-0.1.0a3** | Reorganize flat scripts into `neuralnet/` Python package | next |
+| **neuralnet-0.1.0a3** | Reorganize flat scripts into `neuralnet/` Python package | Shipped 2026-05-14 |
+| **neuralnet-0.1.0a4** | Remove deprecated meta-files; 8 integration tests for heavy paths | Shipped 2026-05-14 |
+| **neuralnet-0.1.0a5** | Remove top-level deprecation shims (close the alpha window) | next |
 | **neuralnet-0.2.0** | Stable `LLMRouter` API + integration tests against real Ollama | next |
 | **neuralnet-0.3.0** | `ProductionTransformer` consolidates to one canonical version | next |
 | **neuralnet-0.4.0** | ModelPack publishing CLI (`neuralnet pack publish`) + verifier | next |
@@ -274,19 +280,27 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 
 ## 9. Known issues / fixes
 
-### 0.1.0a3 (this release)
+### 0.1.0a4 (this release)
 
-- ✅ **Fixed**: flat scripts reorganized into a `neuralnet/` Python package
+- ✅ **Done**: removed the two deprecated meta-files `optimized_transformer.py`
+  and `ipfs_fetch.py`. Their content has lived at `neuralnet.transformer_rage`
+  and `neuralnet.modelpack` since 0.1.0a2 — two alpha cycles is enough.
+- ✅ **Done**: added `tests/test_integration.py` — 8 tests gated by
+  `pytest.importorskip("torch")` etc. Coverage:
+    - `ProductionTransformer` forward + causal-mask shape
+    - `ProductionTransformerRAGE` forward (GQA + RoPE + RMSNorm + SwiGLU)
+    - `SimpleMindTorch` reranker forward
+    - `LLMRouter` construction (Ollama default port check)
+    - `RAGEDataLoader._chunk_text` chunking (×2)
+    - `neuralnet.modelpack init-template` CLI
+
+### 0.1.0a3
+
+- ✅ **Done**: flat scripts reorganized into a `neuralnet/` Python package
   (8 canonical modules: `transformer`, `transformer_v1`, `transformer_rage`,
   `router`, `inference`, `dataloader`, `simplemind`, `modelpack`).
-- ✅ **Fixed**: top-level files retained as deprecation shims that emit
-  `DeprecationWarning` and re-export from the package — existing consumers
-  keep working through one alpha cycle.
-- ✅ **Fixed**: cross-module imports inside the package now use relative form
-  (`from .transformer import ProductionTransformer`).
-- ✅ **Fixed**: `generate.py` updated to `from neuralnet.transformer_rage import ...`.
-- ✅ **Fixed**: `neuralnet/__init__.py` lazy-imports heavy classes inside
-  `try/except ImportError` so `import neuralnet` works without torch installed.
+- ✅ **Done**: top-level files retained as deprecation shims; removal in 0.1.0a5.
+- ✅ **Done**: cross-module imports inside the package use relative form.
 
 ### 0.1.0a2
 
@@ -303,11 +317,8 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 - ✅ **Fixed**: `llm_router.py` defaulted Ollama port to `11411` (typo); upstream is `11434`.
 - ✅ **Fixed**: `install.rage` had `python3.1\`` typo in the venv-creation line.
 
-### Open (planned for 0.1.0a4 / 0.2.0)
+### Open (planned for 0.1.0a5 / 0.2.0)
 
-- ⚠️ Remove the two deprecated meta-files (`optimized_transformer.py`,
-  `ipfs_fetch.py`) entirely. Currently they have prepended deprecation
-  headers but the embedded triple-quoted source remains for git history.
 - ⚠️ Remove the top-level deprecation shims after one alpha cycle (planned
   for 0.2.0).
 - ⚠️ No integration tests for heavy paths (FAISS, sentence-transformers,

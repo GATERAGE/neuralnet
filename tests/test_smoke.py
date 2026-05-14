@@ -163,11 +163,18 @@ def test_generate_py_uses_package_import():
     )
 
 
-def test_deprecation_header_on_meta_files():
-    """The kept-as-historical meta-files still have a clear deprecation header."""
+def test_meta_files_removed():
+    """v0.1.0a4: the two deprecated meta-files are now gone.
+
+    They shipped with deprecation headers in 0.1.0a2; canonical extractions
+    have lived at neuralnet.transformer_rage + neuralnet.modelpack for two
+    alpha cycles. Removal completed in 0.1.0a4.
+    """
     for name in ("optimized_transformer.py", "ipfs_fetch.py"):
-        head = (ROOT / name).read_text(encoding="utf-8")[:200]
-        assert "DEPRECATED" in head, f"{name} missing deprecation header"
+        assert not (ROOT / name).exists(), (
+            f"{name} should be removed in 0.1.0a4; consumers import "
+            f"from neuralnet.* instead"
+        )
 
 
 def test_docs_canonical_files_exist():
