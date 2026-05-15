@@ -1,11 +1,18 @@
 # SPDX-License-Identifier: Apache-2.0
 # (c) 2024-2026 GATERAGE — neuralnet (RAGE + ProductionTransformer)
 #
-# ⚠️  PROTOTYPE — version 0.1.0a6 (PEP-440 alpha)
+# ⚠️  PROTOTYPE — version 0.1.0a7 (PEP-440 alpha)
 # Interfaces will change. Pin the exact commit if you depend on it.
 # Companion repos (RAGE / aglm / mastermind) are at 0.1.0+; this one
 # is intentionally behind until the API stabilizes.
 #
+# v0.1.0a7: server.js smoke test (`tests/test_server_js.py`) — 7 tests
+#   covering static-file routes, the `python -m neuralnet.inference` spawn
+#   contract, `node --check` syntax verification, and two live-start tests
+#   that actually launch `node server.js` on an OS-assigned free port.
+#   Also made `PORT` env-overridable (`NEURALNET_PORT`, then `PORT`, then
+#   3000) so live tests can bind a free socket and so users running the
+#   UI alongside other :3000 services can move it. Full suite: 31 tests.
 # v0.1.0a6: LICENSE normalized to full Apache-2.0 text (was a 1058b
 #   custom MIT file); fixed `server.js` to invoke `python -m neuralnet.inference`
 #   with `cwd: __dirname` (was spawning the removed `rag_inference.py` from
@@ -34,7 +41,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "neuralnet"
-version = "0.1.0a6"
+version = "0.1.0a7"
 description = "PROTOTYPE — RAGE training + serving with a mini ProductionTransformer, FAISS retrieval, pluggable LLM router, IPFS ModelPack distribution, and a Node.js UI."
 readme = "README.md"
 requires-python = ">=3.10"

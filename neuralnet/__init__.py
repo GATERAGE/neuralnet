@@ -7,7 +7,7 @@ Fourth corner of the GATERAGE architecture:
     RAGE remembers, aGLM decides, MASTERMIND orchestrates,
     neuralnet trains and serves.
 
-⚠️  PROTOTYPE — version 0.1.0a3 (PEP-440 alpha)
+⚠️  PROTOTYPE — version 0.1.0a7 (PEP-440 alpha)
 Interfaces will change. Pin the commit SHA in production.
 
 Public modules:
@@ -31,7 +31,7 @@ Public symbols re-exported here for convenience:
 """
 from __future__ import annotations
 
-__version__ = "0.1.0a6"
+__version__ = "0.1.0a7"
 
 # ─── public top-level re-exports ────────────────────────────────────────
 # Heavy modules are imported lazily inside try/except so that

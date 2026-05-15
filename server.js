@@ -11,7 +11,10 @@ const fs = require('fs');
 const { spawn } = require('child_process');
 const path = require('path');
 
-const PORT = 3000;
+// Port is env-overridable (NEURALNET_PORT, then PORT, then 3000).
+// This matters for tests that need to bind a free OS-assigned port, and
+// for users who run the UI alongside other services that already hold :3000.
+const PORT = parseInt(process.env.NEURALNET_PORT || process.env.PORT || '3000', 10);
 
 // Use an environment variable to specify Python path, fallback to 'python'
 const pythonExecutable = process.env.PYTHON_PATH || 'python';

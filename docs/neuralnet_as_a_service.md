@@ -2,18 +2,20 @@
 
 > # ⚠️ PROTOTYPE
 >
-> *This service is at **version 0.1.0a6** — an explicit PEP-440 alpha.
+> *This service is at **version 0.1.0a7** — an explicit PEP-440 alpha.
 > Interfaces will still change. Pin the exact commit if you build against
 > this. The other three GATERAGE repos (RAGE, aglm, mastermind) are at
 > 0.1.0+; this one is intentionally behind until 1.0.*
 >
-> *0.1.0a6 polish pass: LICENSE normalized from a small custom MIT file to
-> full Apache-2.0 text (matching the SPDX headers and pyproject classifier
-> in place since 0.1.0a1); `server.js` now invokes `python -m neuralnet.inference`
-> with `cwd: __dirname` (was still trying to spawn the `rag_inference.py`
-> shim removed in 0.1.0a5); README rewritten end-to-end for the 0.1.0a5
-> layout (the four-corner architecture, package-only imports, install +
-> quick-use, tests). 24/24 tests still passing.*
+> *0.1.0a7 closes the Node.js test gap. `tests/test_server_js.py` adds 7
+> smoke tests: static-file route assertions, the `python -m neuralnet.inference`
+> spawn contract (no references to the removed `rag_inference.py` shim,
+> `cwd: __dirname` pinned), a `node --check` syntax pass, and two live-start
+> tests that actually launch `node server.js` on an OS-assigned free port
+> and verify GET / serves HTML + that unknown routes 404. To make the live
+> tests bindable on shared CI hosts, `server.js`'s `PORT` is now
+> env-overridable: `NEURALNET_PORT` wins over `PORT` wins over `3000`.
+> Full suite: 31/31 passing.*
 >
 > *Canonical imports (unchanged from 0.1.0a3):*
 >
@@ -269,7 +271,8 @@ When stable, neuralnet should:
 | **neuralnet-0.1.0a4** | Remove deprecated meta-files; 8 integration tests for heavy paths | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a5** | Remove top-level deprecation shims (close the alpha window) | Shipped 2026-05-14 |
 | **neuralnet-0.1.0a6** | Apache-2.0 LICENSE normalization + `server.js` cwd-safety + README rewrite | Shipped 2026-05-14 |
-| **neuralnet-0.1.0a7** | `tests/test_server_js.py` smoke test for the Node.js routes | next |
+| **neuralnet-0.1.0a7** | `tests/test_server_js.py` smoke test for the Node.js routes; env-overridable `PORT` (`NEURALNET_PORT`) | Shipped 2026-05-14 |
+| **neuralnet-0.1.0a8** | Document `simplemind_jax.py` JAX-side parity (or fold the JAX path into `neuralnet.simplemind_jax`) | next |
 | **neuralnet-0.2.0** | Stable `LLMRouter` API + integration tests against real Ollama | next |
 | **neuralnet-0.3.0** | `ProductionTransformer` consolidates to one canonical version | next |
 | **neuralnet-0.4.0** | ModelPack publishing CLI (`neuralnet pack publish`) + verifier | next |
@@ -282,7 +285,24 @@ Until 1.0, treat every commit as breaking. Pin by SHA.
 
 ## 9. Known issues / fixes
 
-### 0.1.0a6 (this release)
+### 0.1.0a7 (this release)
+
+- ✅ **Done**: `tests/test_server_js.py` — 7 smoke tests for the Node.js UI:
+  file presence, expected route handlers (GET `/`, GET `/style.css`,
+  POST `/ingest`, POST `/inference`), the post-0.1.0a5 spawn contract
+  (`python -m neuralnet.inference` with `cwd: __dirname`, no
+  `rag_inference.py`), the 0.1.0a7 `NEURALNET_PORT` env contract, a
+  `node --check` syntax pass, and two live-start tests that `Popen(node
+  server.js)` on an OS-assigned free port via `NEURALNET_PORT`, GET / +
+  assert 200 + HTML, GET unknown + assert 404, SIGTERM cleanup in finally.
+- ✅ **Done**: `server.js` `PORT` is now env-overridable —
+  `NEURALNET_PORT` wins over `PORT` wins over `3000`. This is what makes
+  the live-start tests possible and lets users running the UI alongside
+  other :3000 services move it without editing the source.
+- ✅ **Net effect**: full suite is now 31 tests (16 smoke + 8 integration
+  + 7 server.js). The Node.js layer has its first smoke/syntax/live tests.
+
+### 0.1.0a6
 
 - ✅ **Done**: LICENSE normalized to full Apache-2.0 text. The previous file
   was a 1058b custom MIT notice, even though every SPDX header and the
