@@ -1,4 +1,4 @@
-# neuralnet
+# <a href="https://rage.pythai.net/production-transformer-2026/">neuralnet</a>
 
 > ## ⚠️ PROTOTYPE — version 0.1.0a6 (PEP-440 alpha)
 >
